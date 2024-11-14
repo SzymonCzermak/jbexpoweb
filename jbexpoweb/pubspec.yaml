@@ -39,6 +39,10 @@ dependencies:
   smooth_page_indicator: ^1.2.0+3
   scroll_snap_list: ^0.9.1
   scrollable_positioned_list: ^0.3.8
+  flutter_svg: ^2.0.10+1
+  country_icons: ^2.0.1
+  url_launcher: ^6.3.1
+  font_awesome_flutter: ^10.8.0
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +73,8 @@ flutter:
     - assets/Targi/2.png
     - assets/Targi/3.png
     - assets/Background.png
+    - assets/Team/Jakub Bagrowski.png
+    - assets/Team/Magdalena Kostrzewska.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

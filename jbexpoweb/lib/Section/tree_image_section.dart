@@ -1,31 +1,140 @@
 import 'package:flutter/material.dart';
 
-class ThreeImageSection extends StatelessWidget {
-  const ThreeImageSection({super.key});
+class ThreeImageSection extends StatefulWidget {
+  final bool isPolish;
+
+  const ThreeImageSection({super.key, required this.isPolish});
+
+  @override
+  _ThreeImageSectionState createState() => _ThreeImageSectionState();
+}
+
+class _ThreeImageSectionState extends State<ThreeImageSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _titleOpacity;
+  late Animation<double> _subTitleOpacity;
+  late List<Animation<double>> _imageOpacities;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _titleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.0, 0.2)),
+    );
+
+    _subTitleOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: const Interval(0.2, 0.4)),
+    );
+
+    _imageOpacities = List.generate(3, (index) {
+      final startInterval = 0.4 + (index * 0.2);
+      return Tween<double>(begin: 0.0, end: 1.0).animate(
+        CurvedAnimation(
+          parent: _controller,
+          curve: Interval(startInterval, startInterval + 0.2),
+        ),
+      );
+    });
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildImageCard('assets/Targi/1.png',
-            'JB Expo Plus zaprezentowało swoje stoisko na targach GENERA 2023 w Madrycie, jednym z kluczowych wydarzeń branży energii odnawialnej. Stoisko z nowoczesnymi modułami solarnymi Tongwei przyciągało uwagę odwiedzających dzięki nowoczesnemu designowi i innowacyjnym rozwiązaniom w zakresie energii słonecznej.'),
-        _buildImageCard('assets/Targi/2.png', 'Opis 2'),
-        _buildImageCard('assets/Targi/3.png', 'Opis 3'),
+        const SizedBox(height: 60),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20.0),
+          child: Column(
+            children: [
+              FadeTransition(
+                opacity: _titleOpacity,
+                child: Text(
+                  widget.isPolish
+                      ? 'Nasze realizacje na światowych targach'
+                      : 'Our showcases at global trade fairs',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 185, 185, 185),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              FadeTransition(
+                opacity: _subTitleOpacity,
+                child: Text(
+                  widget.isPolish
+                      ? 'Wyjątkowe projekty dla wyjątkowych klientów.'
+                      : 'Unique projects for unique clients.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w400,
+                    color: Color.fromARGB(255, 185, 185, 185),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 60),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(3, (index) {
+            return Expanded(
+              child: FadeTransition(
+                opacity: _imageOpacities[index],
+                child: _buildImageCard(
+                  'assets/Targi/${index + 1}.png',
+                  _getDescription(index),
+                ),
+              ),
+            );
+          }),
+        ),
       ],
     );
   }
 
-  // Funkcja budująca pojedynczą kartę ze zdjęciem
+  String _getDescription(int index) {
+    if (index == 0) {
+      return widget.isPolish
+          ? 'W Madrycie na targach GENERA 2023 zaprezentowaliśmy nasze stoisko z nowoczesnymi modułami solarnymi Tongwei, które spotkały się z ogromnym zainteresowaniem wśród specjalistów branży odnawialnych źródeł energii.'
+          : 'At GENERA 2023 in Madrid, we showcased our booth featuring cutting-edge solar modules by Tongwei, which garnered significant interest from renewable energy professionals.';
+    } else if (index == 1) {
+      return widget.isPolish
+          ? 'Na targach IFA Berlin 2024 zaprezentowaliśmy zaawansowane technologie grupy NBD, skupiając się na innowacyjnych rozwiązaniach dla branży technologicznej.'
+          : 'At IFA Berlin 2024, we presented the advanced technologies of NBD Group, emphasizing innovative solutions for the tech industry.';
+    } else {
+      return widget.isPolish
+          ? 'W Barcelonie, na MWC 2024, przedstawiliśmy rozwiązania weryfikacji tożsamości firmy Regula, które przyciągnęły uwagę globalnej publiczności, zainteresowanej najnowszymi technologiami bezpieczeństwa.'
+          : 'In Barcelona at MWC 2024, we showcased identity verification solutions by Regula, capturing the attention of a global audience interested in the latest security technologies.';
+    }
+  }
+
   Widget _buildImageCard(String imagePath, String description) {
-    return Flexible(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-            horizontal: 45.0), // Większa przestrzeń między obrazami
-        child: HoverImageCard(
-          imagePath: imagePath,
-          description: description,
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 45.0),
+      child: HoverImageCard(
+        imagePath: imagePath,
+        description: description,
       ),
     );
   }
@@ -54,7 +163,7 @@ class _HoverImageCardState extends State<HoverImageCard>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
   }
@@ -86,7 +195,6 @@ class _HoverImageCardState extends State<HoverImageCard>
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Animacja powiększenia obrazu
             ScaleTransition(
               scale: Tween(begin: 1.0, end: 1.1).animate(CurvedAnimation(
                 parent: _controller,
@@ -103,7 +211,6 @@ class _HoverImageCardState extends State<HoverImageCard>
                 ),
               ),
             ),
-            // Kontener dla tekstu pojawiający się na środku obrazu
             AnimatedOpacity(
               opacity: _isHovered ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 300),
@@ -117,7 +224,7 @@ class _HoverImageCardState extends State<HoverImageCard>
                   child: Text(
                     widget.description,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 185, 185, 185),
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
