@@ -42,7 +42,11 @@ dependencies:
   flutter_svg: ^2.0.10+1
   country_icons: ^2.0.1
   url_launcher: ^6.3.1
-  font_awesome_flutter: ^10.8.0
+  font_awesome_flutter: ^10.2.1
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  google_maps_flutter: ^2.6.1
+  visibility_detector: ^0.4.0+2
 
 dev_dependencies:
   flutter_test:
@@ -73,8 +77,16 @@ flutter:
     - assets/Targi/2.png
     - assets/Targi/3.png
     - assets/Background.png
+    - assets/Background2.png
     - assets/Team/Jakub Bagrowski.png
     - assets/Team/Magdalena Kostrzewska.png
+    - assets/LogoBlack.svg
+    - assets/LogoWhite.svg
+    - assets/maps.png
+    - assets/Welcome.png
+
+
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
 
 class ServicesSection extends StatefulWidget {
@@ -19,7 +18,6 @@ class ServicesSection extends StatefulWidget {
 class _ServicesSectionState extends State<ServicesSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fadeInAnimation;
   late List<Animation<double>> _cardOpacities;
 
   @override
@@ -29,10 +27,6 @@ class _ServicesSectionState extends State<ServicesSection>
     _controller = AnimationController(
       duration: const Duration(milliseconds: 2500),
       vsync: this,
-    );
-
-    _fadeInAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
     );
 
     _cardOpacities = List.generate(6, (index) {
@@ -57,12 +51,37 @@ class _ServicesSectionState extends State<ServicesSection>
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+
+    // Obliczenie dynamicznego odstępu
+    final double topSpacing = screenWidth < 600
+        ? 20.0
+        : screenHeight * 0.05; // Większa przerwa dla większych ekranów
+
+    final double titleFontSize = screenWidth * 0.07;
+    final double subtitleFontSize = screenWidth * 0.03;
+    final double cardTitleFontSize = screenWidth * 0.035;
+    final double cardDescriptionFontSize = screenWidth * 0.025;
+    final double iconSize = screenWidth < 300
+        ? 12.0 // Bardzo małe gwiazdki na małych ekranach
+        : (screenWidth < 400
+            ? 20.0 // Średni rozmiar gwiazdek
+            : 30.0); // Duży rozmiar na większych ekranach
+
+    // Dynamika układu
+    final int columns = screenWidth < 600 ? 2 : 3;
+    final double spacing = screenWidth < 600 ? 10 : 20;
+    final double runSpacing =
+        screenWidth < 600 ? 15 : 100; // Dynamiczny odstęp między wierszami
+
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        SizedBox(height: topSpacing), // Dynamiczny odstęp od góry
         FadeTransition(
-          opacity: _fadeInAnimation,
+          opacity: _controller,
           child: Column(
             children: [
               Text(
@@ -71,102 +90,58 @@ class _ServicesSectionState extends State<ServicesSection>
                     : 'A passion for creating spaces',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dancingScript(
-                  fontSize: 125,
+                  fontSize: titleFontSize.clamp(45.0, 120.0),
                   fontWeight: FontWeight.w700,
                   color: widget.color,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Text(
                 widget.isPolish
                     ? 'Nasz kompleksowy pakiet usług skierowany jest do szerokiej gamy klientów, od właścicieli domów po deweloperów komercyjnych.'
                     : 'Our comprehensive suite of professional services caters to a diverse clientele, ranging from homeowners to commercial developers.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.openSans(
-                  fontSize: 20,
+                  fontSize: subtitleFontSize.clamp(1.0, 18.0),
                   fontWeight: FontWeight.w400,
                   height: 1.5,
                   color: widget.color,
                 ),
               ),
-              const SizedBox(height: 100),
+              const SizedBox(height: 35),
             ],
           ),
         ),
-        const SizedBox(height: 15),
+        SizedBox(
+          height: screenWidth < 600
+              ? 1 // Mniejsza przerwa na małych ekranach
+              : 40, // Większa przerwa na dużych ekranach
+        ),
         LayoutBuilder(
           builder: (context, constraints) {
-            double itemWidth = constraints.maxWidth / 3 - 40; // Szerokość karty
-            return Center(
-              child: Wrap(
-                spacing: 16,
-                runSpacing: 40, // Większy odstęp między rzędami
-                alignment: WrapAlignment.center,
-                children: [
-                  // Pierwszy rząd kart
+            double itemWidth = (constraints.maxWidth / columns) - spacing;
+
+            return Wrap(
+              spacing: spacing,
+              runSpacing: runSpacing, // Zmienny odstęp między wierszami
+              alignment: WrapAlignment.center,
+              children: [
+                for (int i = 0; i < 6; i++)
                   FadeTransition(
-                    opacity: _cardOpacities[0],
-                    child: _buildServiceCard(
-                      title: _getTitle(0),
-                      description: _getDescription(0),
-                      delay: 0,
+                    opacity: _cardOpacities[i],
+                    child: SizedBox(
                       width: itemWidth,
-                      color: widget.color,
+                      child: _ServiceCard(
+                        title: _getTitle(i),
+                        description: _getDescription(i),
+                        color: widget.color,
+                        cardTitleFontSize: cardTitleFontSize,
+                        cardDescriptionFontSize: cardDescriptionFontSize,
+                        iconSize: iconSize,
+                      ),
                     ),
                   ),
-                  FadeTransition(
-                    opacity: _cardOpacities[1],
-                    child: _buildServiceCard(
-                      title: _getTitle(1),
-                      description: _getDescription(1),
-                      delay: 0,
-                      width: itemWidth,
-                      color: widget.color,
-                    ),
-                  ),
-                  FadeTransition(
-                    opacity: _cardOpacities[2],
-                    child: _buildServiceCard(
-                      title: _getTitle(2),
-                      description: _getDescription(2),
-                      delay: 0,
-                      width: itemWidth,
-                      color: widget.color,
-                    ),
-                  ),
-                  // Drugi rząd kart z odstępem
-                  FadeTransition(
-                    opacity: _cardOpacities[3],
-                    child: _buildServiceCard(
-                      title: _getTitle(3),
-                      description: _getDescription(3),
-                      delay: 0,
-                      width: itemWidth,
-                      color: widget.color,
-                    ),
-                  ),
-                  FadeTransition(
-                    opacity: _cardOpacities[4],
-                    child: _buildServiceCard(
-                      title: _getTitle(4),
-                      description: _getDescription(4),
-                      delay: 0,
-                      width: itemWidth,
-                      color: widget.color,
-                    ),
-                  ),
-                  FadeTransition(
-                    opacity: _cardOpacities[5],
-                    child: _buildServiceCard(
-                      title: _getTitle(5),
-                      description: _getDescription(5),
-                      delay: 0,
-                      width: itemWidth,
-                      color: widget.color,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             );
           },
         ),
@@ -177,168 +152,122 @@ class _ServicesSectionState extends State<ServicesSection>
   String _getTitle(int index) {
     return widget.isPolish
         ? [
-            'Renowacja',
+            'Kreatywność',
             'Ciągłe wsparcie',
-            'Dostęp do aplikacji',
+            'Wydajność',
             'Doradztwo',
             'Zarządzanie projektami',
-            'Rozwiązania architektoniczne'
+            'Profesjonalizm'
           ][index]
         : [
-            'Renovation',
+            'Creativity',
             'Continuous Support',
-            'App Access',
+            'Efficiency',
             'Consulting',
             'Project Management',
-            'Architectural Solutions'
+            'Professionalism'
           ][index];
   }
 
   String _getDescription(int index) {
     return widget.isPolish
         ? [
-            'Odświeżamy przestrzenie i przywracamy im dawną świetność.',
+            'Tworzymy innowacyjne rozwiązania na miarę przyszłości.',
             'Zapewniamy wsparcie na każdym etapie realizacji projektu.',
-            'Nasze aplikacje ułatwiają zarządzanie projektami.',
+            'Osiągamy doskonałe wyniki w krótkim czasie.',
             'Profesjonalne doradztwo dostosowane do indywidualnych potrzeb.',
             'Efektywne zarządzanie projektami dla zapewnienia sukcesu.',
-            'Kreatywne i funkcjonalne rozwiązania architektoniczne.'
+            'Oferujemy najwyższą jakość usług i pełne zaangażowanie w każdy projekt.'
           ][index]
         : [
-            'We refresh spaces and restore their former glory.',
+            'We create innovative solutions for the future.',
             'We provide support at every stage of the project.',
-            'Our apps make project management easier.',
+            'We achieve excellent results in a short time',
             'Professional consulting tailored to individual needs.',
             'Efficient project management for guaranteed success.',
-            'Creative and functional architectural solutions.'
+            'We offer the highest quality services and full commitment to every project.'
           ][index];
-  }
-
-  Widget _buildServiceCard({
-    required String title,
-    required String description,
-    required int delay,
-    required double width,
-    required Color color,
-  }) {
-    return SizedBox(
-      width: width,
-      child: _ServiceCard(
-        title: title,
-        description: description,
-        delay: delay,
-        color: color,
-      ),
-    );
   }
 }
 
 class _ServiceCard extends StatefulWidget {
   final String title;
   final String description;
-  final int delay;
   final Color color;
+  final double cardTitleFontSize;
+  final double cardDescriptionFontSize;
+  final double iconSize;
 
   const _ServiceCard({
     Key? key,
     required this.title,
     required this.description,
-    required this.delay,
     required this.color,
+    required this.cardTitleFontSize,
+    required this.cardDescriptionFontSize,
+    required this.iconSize,
   }) : super(key: key);
 
   @override
-  __ServiceCardState createState() => __ServiceCardState();
+  State<_ServiceCard> createState() => _ServiceCardState();
 }
 
-class __ServiceCardState extends State<_ServiceCard>
-    with SingleTickerProviderStateMixin {
-  bool isVisible = false;
-  bool isHovered = false;
+class _ServiceCardState extends State<_ServiceCard> {
+  bool isHovered = false; // Flaga dla efektu najechania
 
-  @override
-  void initState() {
-    super.initState();
-    Timer(Duration(milliseconds: widget.delay), () {
-      setState(() {
-        isVisible = true;
-      });
+  void _onHover(bool hovering) {
+    setState(() {
+      isHovered = hovering;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          isHovered = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          isHovered = false;
-        });
-      },
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Opacity(
-            opacity: 0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: const [
-                Icon(Icons.star, size: 40),
-                SizedBox(height: 10),
-                Text("Title", style: TextStyle(fontSize: 18)),
-                SizedBox(height: 6),
-                Text("Description", style: TextStyle(fontSize: 13)),
-                SizedBox(width: 6),
-              ],
-            ),
+    return GestureDetector(
+      onTap: () => _onHover(!isHovered), // Kliknięcie na ekranach dotykowych
+      child: MouseRegion(
+        onEnter: (_) => _onHover(true),
+        onExit: (_) => _onHover(false),
+        child: AnimatedScale(
+          scale: isHovered ? 1.1 : 1.0,
+          duration: const Duration(milliseconds: 200),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.star,
+                size: widget.iconSize.clamp(6.0, 30.0),
+                color:
+                    isHovered ? Color.fromARGB(255, 194, 181, 0) : widget.color,
+              ),
+              const SizedBox(height: 10),
+              AnimatedDefaultTextStyle(
+                style: GoogleFonts.montserrat(
+                  fontSize: widget.cardTitleFontSize.clamp(8.0, 20.0),
+                  fontWeight: isHovered ? FontWeight.bold : FontWeight.w500,
+                  color: isHovered
+                      ? Color.fromARGB(255, 194, 181, 0)
+                      : widget.color,
+                ),
+                duration: const Duration(milliseconds: 200),
+                child: Text(widget.title, textAlign: TextAlign.center),
+              ),
+              const SizedBox(height: 8),
+              AnimatedDefaultTextStyle(
+                style: GoogleFonts.openSans(
+                  fontSize: widget.cardDescriptionFontSize.clamp(6.0, 16.0),
+                  fontWeight: isHovered ? FontWeight.w600 : FontWeight.w400,
+                  color: isHovered
+                      ? Color.fromARGB(255, 194, 181, 0)
+                      : widget.color,
+                  height: 1.4,
+                ),
+                duration: const Duration(milliseconds: 200),
+                child: Text(widget.description, textAlign: TextAlign.center),
+              ),
+            ],
           ),
-          Transform.scale(
-            scale: isHovered ? 1.05 : 1.0,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.star,
-                  size: 40,
-                  color: isHovered ? Colors.amber : widget.color,
-                ),
-                const SizedBox(height: 10),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutExpo,
-                  style: GoogleFonts.montserrat(
-                    fontSize: isHovered ? 18 : 16,
-                    fontWeight: FontWeight.w500,
-                    color: widget.color,
-                  ),
-                  child: Text(
-                    widget.title,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeOutExpo,
-                  style: GoogleFonts.openSans(
-                    fontSize: isHovered ? 15 : 13,
-                    fontWeight: FontWeight.w400,
-                    color: widget.color,
-                    height: 1.3,
-                  ),
-                  child: Text(
-                    widget.description,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
