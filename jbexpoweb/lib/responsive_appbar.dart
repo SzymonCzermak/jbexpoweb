@@ -250,8 +250,8 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 SvgPicture.asset(
                   'packages/country_icons/icons/flags/svg/gb.svg',
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                 ),
                 const SizedBox(width: 4),
                 Switch(
@@ -260,11 +260,12 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                   activeColor: Colors.white,
                   inactiveThumbColor: Colors.white,
                   inactiveTrackColor: Colors.grey,
+                
                 ),
                 SvgPicture.asset(
                   'packages/country_icons/icons/flags/svg/pl.svg',
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                 ),
               ],
             ),

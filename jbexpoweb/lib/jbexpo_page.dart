@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jbexpoweb/Section/third_section.dart';
-import 'package:jbexpoweb/Section/tree_image_section.dart';
+import 'package:jbexpoweb/Section/SingleImageSection.dart';
 import 'package:jbexpoweb/Section/welcome_section.dart';
 import 'package:jbexpoweb/Section/services_section.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
@@ -29,43 +29,48 @@ class _JBExpoPageState extends State<JBExpoPage> {
     });
   }
 
-  void _handleScroll(double delta, {required bool isMouse}) {
-    if (!isScrolling) {
-      isScrolling = true;
+  void _handleScroll(double delta, {required bool isMouse}) async {
+  if (!isScrolling) {
+    isScrolling = true;
 
-      if (isMouse) {
-        // Dla myszki naturalny kierunek przewijania
-        if (delta > 0) {
-          _pageController.nextPage(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        } else if (delta < 0) {
-          _pageController.previousPage(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        }
-      } else {
-        // Dla dotyku odwrotny kierunek
-        if (delta < 0) {
-          _pageController.nextPage(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        } else if (delta > 0) {
-          _pageController.previousPage(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeInOut,
-          );
-        }
+    if (isMouse) {
+      // Naturalny kierunek dla myszki
+      if (delta > 0) {
+        // Przewijanie w dół
+        await _pageController.nextPage(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+        );
+      } else if (delta < 0) {
+        // Przewijanie w górę
+        await _pageController.previousPage(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+        );
       }
-
-      Future.delayed(const Duration(milliseconds: 300), () {
-        isScrolling = false;
-      });
+    } else {
+      // Odwrotny kierunek dla dotyku
+      if (delta < 0) {
+        // Przewijanie w dół
+        await _pageController.nextPage(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+        );
+      } else if (delta > 0) {
+        // Przewijanie w górę
+        await _pageController.previousPage(
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+        );
+      }
     }
+
+    // Blokada przewijania na 500 ms
+    await Future.delayed(const Duration(milliseconds: 1000));
+    isScrolling = false;
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
