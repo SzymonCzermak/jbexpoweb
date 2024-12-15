@@ -1,6 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:jbexpoweb/Section/ExhibitionLogoSection.dart';
+import 'package:jbexpoweb/Section/VideoSection.dart';
 import 'package:jbexpoweb/Section/third_section.dart';
 import 'package:jbexpoweb/Section/SingleImageSection.dart';
 import 'package:jbexpoweb/Section/welcome_section.dart';
@@ -30,47 +32,46 @@ class _JBExpoPageState extends State<JBExpoPage> {
   }
 
   void _handleScroll(double delta, {required bool isMouse}) async {
-  if (!isScrolling) {
-    isScrolling = true;
+    if (!isScrolling) {
+      isScrolling = true;
 
-    if (isMouse) {
-      // Naturalny kierunek dla myszki
-      if (delta > 0) {
-        // Przewijanie w dół
-        await _pageController.nextPage(
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeInOut,
-        );
-      } else if (delta < 0) {
-        // Przewijanie w górę
-        await _pageController.previousPage(
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeInOut,
-        );
+      if (isMouse) {
+        // Naturalny kierunek dla myszki
+        if (delta > 0) {
+          // Przewijanie w dół
+          await _pageController.nextPage(
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeInOut,
+          );
+        } else if (delta < 0) {
+          // Przewijanie w górę
+          await _pageController.previousPage(
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeInOut,
+          );
+        }
+      } else {
+        // Odwrotny kierunek dla dotyku
+        if (delta < 0) {
+          // Przewijanie w dół
+          await _pageController.nextPage(
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeInOut,
+          );
+        } else if (delta > 0) {
+          // Przewijanie w górę
+          await _pageController.previousPage(
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.easeInOut,
+          );
+        }
       }
-    } else {
-      // Odwrotny kierunek dla dotyku
-      if (delta < 0) {
-        // Przewijanie w dół
-        await _pageController.nextPage(
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeInOut,
-        );
-      } else if (delta > 0) {
-        // Przewijanie w górę
-        await _pageController.previousPage(
-          duration: const Duration(milliseconds: 700),
-          curve: Curves.easeInOut,
-        );
-      }
+
+      // Blokada przewijania na 500 ms
+      await Future.delayed(const Duration(milliseconds: 1000));
+      isScrolling = false;
     }
-
-    // Blokada przewijania na 500 ms
-    await Future.delayed(const Duration(milliseconds: 1000));
-    isScrolling = false;
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -115,21 +116,20 @@ class _JBExpoPageState extends State<JBExpoPage> {
                       controller: _pageController,
                       physics: const NeverScrollableScrollPhysics(),
                       scrollDirection: Axis.vertical,
-                      itemCount: 4, // Zwiększ liczbę elementów
+                      itemCount: 6, // Zwiększ liczbę elementów
                       itemBuilder: (context, index) {
                         switch (index) {
-                          case 0:
+                          case 1:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
                               child: ServicesSection(isPolish: isPolish),
                             );
-                          case 1:
+                          case 4:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: WelcomeSection(
-                                  isPolish: isPolish), // Nowa sekcja
+                              child: WelcomeSection(isPolish: isPolish),
                             );
-                          case 2:
+                          case 5:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
                               child: SingleImageSection(isPolish: isPolish),
@@ -139,6 +139,13 @@ class _JBExpoPageState extends State<JBExpoPage> {
                               padding: const EdgeInsets.all(16.0),
                               child: ThirdSection(isPolish: isPolish),
                             );
+                          case 2:
+                            return Container(
+                              padding: const EdgeInsets.all(16.0),
+                              child: ExhibitionLogosSection(isPolish: isPolish),
+                            );
+                          case 0: // Nowa sekcja z wideo
+                            return const VideoSection();
                           default:
                             return const SizedBox();
                         }
@@ -155,7 +162,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
             top: MediaQuery.of(context).size.height / 2 - 40,
             child: SmoothPageIndicator(
               controller: _pageController,
-              count: 3,
+              count: 6,
               axisDirection: Axis.vertical,
               effect: WormEffect(
                 activeDotColor: Colors.redAccent,

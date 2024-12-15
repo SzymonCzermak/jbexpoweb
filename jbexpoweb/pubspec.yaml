@@ -47,6 +47,7 @@ dependencies:
   latlong2: ^0.9.1
   google_maps_flutter: ^2.6.1
   visibility_detector: ^0.4.0+2
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +85,10 @@ flutter:
     - assets/LogoWhite.svg
     - assets/maps.png
     - assets/Welcome.png
+    - assets/LogaTargow/
+    - assets/JBExpoPlus_Loga.mp4
+
+
 
 
 

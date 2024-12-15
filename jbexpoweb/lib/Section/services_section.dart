@@ -8,7 +8,7 @@ class ServicesSection extends StatefulWidget {
   const ServicesSection({
     Key? key,
     required this.isPolish,
-    this.color = const Color.fromARGB(255, 185, 185, 185),
+    this.color = const Color.fromARGB(255, 216, 216, 216),
   }) : super(key: key);
 
   @override
@@ -97,46 +97,46 @@ class _ServicesSectionState extends State<ServicesSection>
               ),
               const SizedBox(height: 12),
               RichText(
-  textAlign: TextAlign.center,
-  text: TextSpan(
-    children: [
-      TextSpan(
-        text: widget.isPolish
-            ? 'Nasz kompleksowy pakiet usług '
-            : 'Our comprehensive suite of professional services ',
-        style: GoogleFonts.openSans(
-          fontSize: subtitleFontSize.clamp(1.0, 18.0),
-          fontWeight: FontWeight.w400,
-          height: 1.5,
-          color: widget.color, // Domyślny kolor
-        ),
-      ),
-      TextSpan(
-        text: widget.isPolish
-            ? 'skierowany jest do szerokiej gamy klientów, '
-            : 'caters to a diverse clientele, ',
-        style: GoogleFonts.openSans(
-          fontSize: subtitleFontSize.clamp(1.0, 18.0),
-          fontWeight: FontWeight.w400,
-          height: 1.5,
-          color: const Color.fromARGB(255, 161, 151, 0), // Wyróżniony kolor
-        ),
-      ),
-      TextSpan(
-        text: widget.isPolish
-            ? 'od właścicieli domów po deweloperów komercyjnych.'
-            : 'ranging from homeowners to commercial developers.',
-        style: GoogleFonts.openSans(
-          fontSize: subtitleFontSize.clamp(1.0, 18.0),
-          fontWeight: FontWeight.w400,
-          height: 1.5,
-          color: widget.color, // Domyślny kolor
-        ),
-      ),
-    ],
-  ),
-),
-
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'Nasz kompleksowy pakiet usług '
+                          : 'Our comprehensive suite of professional services ',
+                      style: GoogleFonts.openSans(
+                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: widget.color, // Domyślny kolor
+                      ),
+                    ),
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'skierowany jest do szerokiej gamy klientów, '
+                          : 'caters to a diverse clientele, ',
+                      style: GoogleFonts.openSans(
+                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: const Color.fromARGB(
+                            255, 161, 151, 0), // Wyróżniony kolor
+                      ),
+                    ),
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'od właścicieli domów po deweloperów komercyjnych.'
+                          : 'ranging from homeowners to commercial developers.',
+                      style: GoogleFonts.openSans(
+                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: widget.color, // Domyślny kolor
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 35),
             ],
           ),
