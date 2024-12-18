@@ -7,11 +7,36 @@ class TransportSection extends StatefulWidget {
   const TransportSection({super.key, required this.isPolish});
 
   @override
-  _SingleImageSectionState createState() => _SingleImageSectionState();
+  _TransportSectionState createState() => _TransportSectionState();
 }
 
-class _SingleImageSectionState extends State<TransportSection> {
+class _TransportSectionState extends State<TransportSection>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+
   bool isHovered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   void _onHover(bool hovering) {
     setState(() {
@@ -22,17 +47,19 @@ class _SingleImageSectionState extends State<TransportSection> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isMobile = screenWidth < 600;
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (isMobile) {
-          return _buildMobileLayout();
-        } else {
-          return _buildDesktopLayout();
-        }
-      },
+    return FadeTransition(
+      opacity: _opacityAnimation,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          if (isMobile) {
+            return _buildMobileLayout();
+          } else {
+            return _buildDesktopLayout();
+          }
+        },
+      ),
     );
   }
 

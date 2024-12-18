@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:jbexpoweb/Section/PartnerSection.dart';
 import 'package:jbexpoweb/Section/VideoSection.dart';
-import 'package:jbexpoweb/Section/third_section.dart';
 import 'package:jbexpoweb/Section/TransportSection.dart';
 import 'package:jbexpoweb/Section/PassionSection.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
@@ -67,7 +66,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
       }
 
       // Blokada przewijania na 500 ms
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 550));
       isScrolling = false;
     }
   }
@@ -91,12 +90,18 @@ class _JBExpoPageState extends State<JBExpoPage> {
             ),
           ),
           Column(
-            children: [
-              // AppBar
-              ResponsiveAppBar(
-                isPolish: isPolish,
-                toggleLanguage: _toggleLanguage,
-              ),
+                  children: [
+                    // AppBar
+                    ResponsiveAppBar(
+        isPolish: isPolish,
+        toggleLanguage: (newValue) {
+          setState(() {
+            isPolish = newValue;
+          });
+        },
+        pageController: _pageController, // Przekazano kontroler
+      ),
+
               Expanded(
                 child: GestureDetector(
                   onVerticalDragUpdate: (details) {
@@ -123,22 +128,17 @@ class _JBExpoPageState extends State<JBExpoPage> {
                               padding: const EdgeInsets.all(16.0),
                               child: PassionSection(isPolish: isPolish),
                             );
-                          case 0:
-                            return Container(
-                              padding: const EdgeInsets.all(16.0),
-                              child: TransportSection(isPolish: isPolish),
-                            );
                           case 3:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: ThirdSection(isPolish: isPolish),
+                              child: TransportSection(isPolish: isPolish),
                             );
                           case 2:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
                               child: PartnerSection(isPolish: isPolish),
                             );
-                          case 4: // Nowa sekcja z wideo
+                          case 0: // Nowa sekcja z wideo
                             return const VideoSection();
                           default:
                             return const SizedBox();

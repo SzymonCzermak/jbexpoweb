@@ -7,11 +7,13 @@ import 'package:url_launcher/url_launcher.dart';
 class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isPolish;
   final Function(bool) toggleLanguage;
+  final PageController pageController; // Dodano PageController
 
   const ResponsiveAppBar({
     Key? key,
     required this.isPolish,
     required this.toggleLanguage,
+    required this.pageController, // Dodano PageController
   }) : super(key: key);
 
   @override
@@ -60,11 +62,11 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.contact_mail, // Ikona dla kontaktu
-                    color: Color.fromARGB(255, 161, 151, 0),
-                    size: isSmallScreen ? 14 : 18, // Dynamiczny rozmiar
+                    Icons.contact_mail,
+                    color: const Color.fromARGB(255, 161, 151, 0),
+                    size: isSmallScreen ? 14 : 18,
                   ),
-                  const SizedBox(width: 8), // Odstęp między ikoną a tekstem
+                  const SizedBox(width: 8),
                   Text(
                     isPolish ? "Kontakt" : "Contact",
                     style: TextStyle(
@@ -99,13 +101,39 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.people, // Ikona dla zespołu
+                    Icons.people,
                     color: const Color.fromARGB(255, 161, 151, 0),
-                    size: isSmallScreen ? 14 : 18, // Dynamiczny rozmiar
+                    size: isSmallScreen ? 14 : 18,
                   ),
-                  const SizedBox(width: 8), // Odstęp między ikoną a tekstem
+                  const SizedBox(width: 8),
                   Text(
                     isPolish ? "Poznaj nasz zespół!" : "Meet our Team",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isSmallScreen ? 14 : 18,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: TextButton(
+              onPressed: () {
+                pageController.jumpToPage(3); // Indeks sekcji "Jak działamy"
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.work_outline,
+                    color: const Color.fromARGB(255, 161, 151, 0),
+                    size: isSmallScreen ? 14 : 18,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    isPolish ? "Jak działamy" : "How We Work",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: isSmallScreen ? 14 : 18,
@@ -136,7 +164,7 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
-            color: Colors.black.withOpacity(0.9), // Tło menu
+            color: Colors.black.withOpacity(0.9),
             itemBuilder: (context) {
               return [
                 PopupMenuItem(
@@ -179,7 +207,7 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     onTap: () {
-                      Navigator.of(context).pop(); // Zamknięcie PopupMenu
+                      Navigator.of(context).pop();
                       showDialog(
                         context: context,
                         builder: (context) => TeamDialog(
@@ -194,6 +222,21 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                       );
+                    },
+                  ),
+                ),
+                PopupMenuItem(
+                  value: "JakDzialamy",
+                  child: ListTile(
+                    leading:
+                        const Icon(Icons.work_outline, color: Colors.white),
+                    title: Text(
+                      isPolish ? "Jak działamy" : "How We Work",
+                      style: const TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      pageController.jumpToPage(2); // Indeks sekcji "Jak działamy"
                     },
                   ),
                 ),
@@ -230,14 +273,13 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ];
             },
-            offset: const Offset(0, 50), // Pozycja menu
+            offset: const Offset(0, 50),
             elevation: 8,
           ),
         ],
         SizedBox(
           width: 5,
         ),
-        // Flagi i przełącznik języka pozostają widoczne zawsze
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 10.0),
           child: Transform.scale(
