@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoSection extends StatefulWidget {
-  final double width; // Szerokość wideo
-  final double height; // Wysokość wideo
   final double borderRadius; // Zaokrąglenie ramki
   final double borderWidth; // Grubość ramki
   final Color borderColor; // Kolor ramki
@@ -13,8 +11,6 @@ class VideoSection extends StatefulWidget {
 
   const VideoSection({
     Key? key,
-    this.width = 3000,
-    this.height = 1000,
     this.borderRadius = 0.0,
     this.borderWidth = 0.0,
     this.borderColor = Colors.black,
@@ -29,19 +25,18 @@ class VideoSection extends StatefulWidget {
 
 class _VideoSectionState extends State<VideoSection> {
   late VideoPlayerController _controller;
-  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    // Przekształcenie ścieżki zasobu na URL
-    final assetPath = Uri.encodeFull('assets/JBExpoPlus_Loga.mp4');
+    _initializeVideo();
+  }
 
-    // Użycie VideoPlayerController.network zamiast .asset
-    _controller = VideoPlayerController.network(
-      '/$assetPath', // Ścieżka pliku w formacie URL
-    )..initialize().then((_) {
-        debugPrint("Video Initialized");
+  void _initializeVideo() {
+    // Reset kontrolera i inicjalizacja od początku
+    _controller = VideoPlayerController.asset('assets/JBExpoPlus_Loga.mp4')
+      ..setVolume(0) // Wyciszenie wideo (ważne dla automatycznego startu)
+      ..initialize().then((_) {
         if (mounted) {
           setState(() {
             _controller.play();
@@ -55,43 +50,53 @@ class _VideoSectionState extends State<VideoSection> {
 
   @override
   void dispose() {
-    _controller.removeListener(() {});
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Container(
-        width: widget.width,
-        height: widget.height,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          boxShadow: [
-            BoxShadow(
-              color: widget.shadowColor.withOpacity(0.5),
-              spreadRadius: widget.shadowSpreadRadius,
-              blurRadius: widget.shadowBlurRadius,
-              offset: const Offset(4, 4),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final screenHeight = MediaQuery.of(context).size.height;
+
+        return Center(
+          child: Container(
+            width: screenWidth, // Pełna szerokość ekranu
+            height: screenHeight, // Pełna wysokość ekranu
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.shadowColor.withOpacity(0.5),
+                  spreadRadius: widget.shadowSpreadRadius,
+                  blurRadius: widget.shadowBlurRadius,
+                  offset: const Offset(4, 4),
+                ),
+              ],
+              border: Border.all(
+                color: widget.borderColor,
+                width: widget.borderWidth,
+              ),
             ),
-          ],
-          border: Border.all(
-            color: widget.borderColor,
-            width: widget.borderWidth,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              child: _controller.value.isInitialized
+                  ? FittedBox(
+                      fit: BoxFit.contain, // Rozciągnięcie filmu na cały ekran
+                      child: SizedBox(
+                        width: _controller.value.size.width,
+                        height: _controller.value.size.height,
+                        child: VideoPlayer(_controller),
+                      ),
+                    )
+                  : const Center(child: CircularProgressIndicator()),
+            ),
           ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          child: _controller.value.isInitialized && _isPlaying
-              ? AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                )
-              : const Center(child: CircularProgressIndicator()),
-        ),
-      ),
+        );
+      },
     );
   }
 }

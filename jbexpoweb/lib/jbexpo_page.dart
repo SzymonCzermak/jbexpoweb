@@ -1,12 +1,11 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:jbexpoweb/Section/ExhibitionLogoSection.dart';
+import 'package:jbexpoweb/Section/PartnerSection.dart';
 import 'package:jbexpoweb/Section/VideoSection.dart';
 import 'package:jbexpoweb/Section/third_section.dart';
-import 'package:jbexpoweb/Section/SingleImageSection.dart';
-import 'package:jbexpoweb/Section/welcome_section.dart';
-import 'package:jbexpoweb/Section/services_section.dart';
+import 'package:jbexpoweb/Section/TransportSection.dart';
+import 'package:jbexpoweb/Section/PassionSection.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
 import 'package:jbexpoweb/team_dialog.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -82,7 +81,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/Background2.png'),
+                image: AssetImage('assets/Background3.png'),
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                   const Color.fromARGB(255, 0, 0, 0).withOpacity(0.0),
@@ -122,17 +121,12 @@ class _JBExpoPageState extends State<JBExpoPage> {
                           case 1:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: ServicesSection(isPolish: isPolish),
+                              child: PassionSection(isPolish: isPolish),
                             );
-                          case 4:
+                          case 0:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: WelcomeSection(isPolish: isPolish),
-                            );
-                          case 5:
-                            return Container(
-                              padding: const EdgeInsets.all(16.0),
-                              child: SingleImageSection(isPolish: isPolish),
+                              child: TransportSection(isPolish: isPolish),
                             );
                           case 3:
                             return Container(
@@ -142,9 +136,9 @@ class _JBExpoPageState extends State<JBExpoPage> {
                           case 2:
                             return Container(
                               padding: const EdgeInsets.all(16.0),
-                              child: ExhibitionLogosSection(isPolish: isPolish),
+                              child: PartnerSection(isPolish: isPolish),
                             );
-                          case 0: // Nowa sekcja z wideo
+                          case 4: // Nowa sekcja z wideo
                             return const VideoSection();
                           default:
                             return const SizedBox();

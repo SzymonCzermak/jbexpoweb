@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ServicesSection extends StatefulWidget {
+class PassionSection extends StatefulWidget {
   final bool isPolish;
   final Color color;
 
-  const ServicesSection({
+  const PassionSection({
     Key? key,
     required this.isPolish,
     this.color = const Color.fromARGB(255, 216, 216, 216),
@@ -15,7 +15,7 @@ class ServicesSection extends StatefulWidget {
   _ServicesSectionState createState() => _ServicesSectionState();
 }
 
-class _ServicesSectionState extends State<ServicesSection>
+class _ServicesSectionState extends State<PassionSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late List<Animation<double>> _cardOpacities;

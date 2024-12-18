@@ -82,19 +82,17 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (BuildContext context) {
-                    return TeamDialog(
-                      isPolish: isPolish,
-                      borderGradient: const LinearGradient(
-                        colors: [
-                          Color.fromARGB(255, 0, 54, 148),
-                          Color.fromARGB(255, 114, 0, 0),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    );
-                  },
+                  builder: (context) => TeamDialog(
+                    isPolish: isPolish,
+                    borderGradient: const LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 0, 54, 148),
+                        Color.fromARGB(255, 114, 0, 0),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
                 );
               },
               child: Row(
@@ -102,12 +100,12 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Icon(
                     Icons.people, // Ikona dla zespołu
-                    color: Color.fromARGB(255, 161, 151, 0),
+                    color: const Color.fromARGB(255, 161, 151, 0),
                     size: isSmallScreen ? 14 : 18, // Dynamiczny rozmiar
                   ),
                   const SizedBox(width: 8), // Odstęp między ikoną a tekstem
                   Text(
-                    isPolish ? "Nasz Zespół" : "Our Team",
+                    isPolish ? "Poznaj nasz zespół!" : "Meet our Team",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: isSmallScreen ? 14 : 18,
@@ -177,26 +175,24 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                     leading: const Icon(Icons.people,
                         color: Color.fromARGB(255, 161, 151, 0)),
                     title: Text(
-                      isPolish ? "Nasz Zespół" : "Our Team",
+                      isPolish ? "Poznaj nasz zespół!" : "Meet our Team",
                       style: const TextStyle(color: Colors.white, fontSize: 16),
                     ),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(); // Zamknięcie PopupMenu
                       showDialog(
                         context: context,
-                        builder: (BuildContext context) {
-                          return TeamDialog(
-                            isPolish: isPolish,
-                            borderGradient: const LinearGradient(
-                              colors: [
-                                Color.fromARGB(255, 0, 54, 148),
-                                Color.fromARGB(255, 114, 0, 0),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          );
-                        },
+                        builder: (context) => TeamDialog(
+                          isPolish: isPolish,
+                          borderGradient: const LinearGradient(
+                            colors: [
+                              Color.fromARGB(255, 0, 54, 148),
+                              Color.fromARGB(255, 114, 0, 0),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -260,7 +256,6 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                   activeColor: Colors.white,
                   inactiveThumbColor: Colors.white,
                   inactiveTrackColor: Colors.grey,
-                
                 ),
                 SvgPicture.asset(
                   'packages/country_icons/icons/flags/svg/pl.svg',

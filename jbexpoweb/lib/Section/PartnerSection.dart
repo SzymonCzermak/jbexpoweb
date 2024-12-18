@@ -3,17 +3,16 @@ import 'dart:async';
 
 import 'package:google_fonts/google_fonts.dart';
 
-class ExhibitionLogosSection extends StatefulWidget {
+class PartnerSection extends StatefulWidget {
   final bool isPolish;
 
-  const ExhibitionLogosSection({Key? key, required this.isPolish})
-      : super(key: key);
+  const PartnerSection({Key? key, required this.isPolish}) : super(key: key);
 
   @override
   _ExhibitionLogosSectionState createState() => _ExhibitionLogosSectionState();
 }
 
-class _ExhibitionLogosSectionState extends State<ExhibitionLogosSection> {
+class _ExhibitionLogosSectionState extends State<PartnerSection> {
   final ScrollController _scrollController = ScrollController();
   late Timer _timer;
 
@@ -59,6 +58,8 @@ class _ExhibitionLogosSectionState extends State<ExhibitionLogosSection> {
     final fontSize = screenWidth > 600
         ? 60.0
         : screenWidth * 0.07; // Zmniejsz rozmiar tekstu na małych ekranach
+    final smallFontSize =
+        fontSize * 0.7; // Mniejszy rozmiar czcionki dla drugiego tekstu
     final imageSize = screenWidth > 600
         ? 500.0
         : screenWidth * 0.6; // Zmniejsz rozmiar logotypów na małych ekranach
@@ -80,48 +81,57 @@ class _ExhibitionLogosSectionState extends State<ExhibitionLogosSection> {
               vertical: 16.0,
               horizontal: horizontalPadding, // Responsywny margines
             ),
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: GoogleFonts.openSans(
-                  fontSize: fontSize, // Responsywny rozmiar tekstu
-                  color: const Color.fromARGB(
-                      255, 216, 216, 216), // Domyślny kolor tekstu
-                  fontWeight: FontWeight.bold, // Styl czcionki
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Główny tekst na górze
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: GoogleFonts.openSans(
+                      fontSize: fontSize * 1.2, // Większy rozmiar czcionki
+                      color: const Color.fromARGB(255, 216, 216, 216),
+                      fontWeight: FontWeight.bold,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: widget.isPolish
+                            ? "Braliśmy udział w "
+                            : "We participated in ",
+                      ),
+                      TextSpan(
+                        text: widget.isPolish
+                            ? "czołowych targach europejskich"
+                            : "leading European trade fairs",
+                        style: GoogleFonts.openSans(
+                          color: const Color.fromARGB(
+                              255, 161, 151, 0), // Złoty kolor
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                children: [
-                  TextSpan(
-                    text: widget.isPolish
-                        ? "Braliśmy udział w "
-                        : "We participated in ",
-                  ),
-                  TextSpan(
-                    text: widget.isPolish
-                        ? "czołowych targach europejskich"
-                        : "leading European trade fairs",
+                const SizedBox(height: 8), // Odstęp między tekstami
+
+                // Tekst poniżej z mniejszą czcionką
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
                     style: GoogleFonts.openSans(
-                      color:
-                          const Color.fromARGB(255, 161, 151, 0), // Złoty kolor
-                      fontWeight: FontWeight.bold,
+                      fontSize: smallFontSize, // Mniejszy rozmiar czcionki
+                      color: const Color.fromARGB(255, 216, 216, 216),
                     ),
+                    children: [
+                      TextSpan(
+                        text: widget.isPolish
+                            ? "gdzie nasze stoiska zachwycały jakością i nowoczesnym designem."
+                            : "where our booths impressed with quality and modern design.",
+                      ),
+                    ],
                   ),
-                  TextSpan(
-                    text: widget.isPolish
-                        ? ", gdzie nasze stoiska "
-                        : ", where our booths ",
-                  ),
-                  TextSpan(
-                    text: widget.isPolish
-                        ? "zachwycały jakością i nowoczesnym designem."
-                        : "impressed with quality and modern design.",
-                    style: GoogleFonts.openSans(
-                      color:
-                          const Color.fromARGB(255, 161, 151, 0), // Złoty kolor
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           Expanded(

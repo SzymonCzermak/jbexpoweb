@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class TeamDialog extends StatelessWidget {
@@ -13,11 +14,17 @@ class TeamDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Ustal maksymalną szerokość dialogu
+    final dialogWidth = screenWidth > 700 ? 700.0 : screenWidth * 0.9;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      elevation: 10,
+      elevation: 8,
       backgroundColor: Colors.transparent,
       child: Container(
+        width: dialogWidth,
         decoration: BoxDecoration(
           gradient: borderGradient,
           borderRadius: BorderRadius.circular(20),
@@ -28,52 +35,78 @@ class TeamDialog extends StatelessWidget {
             color: Colors.black,
             borderRadius: BorderRadius.circular(17),
           ),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 500),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Tytuł dialogu
                   Text(
                     isPolish ? "Nasz Zespół" : "Our Team",
                     style: GoogleFonts.openSans(
-                      fontSize: 28,
+                      fontSize: screenWidth > 400 ? 28 : 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
+                      color: Colors.redAccent,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
 
-                  // Jakub Bagrowski
-                  _buildTeamMember(
-                    context: context,
-                    name: "Jakub Bagrowski",
-                    position:
-                        isPolish ? "Szef wszystkich szefów" : "Team Leader",
-                    description: isPolish
-                        ? "Jakub jest założycielem i liderem naszej firmy, z wieloletnim doświadczeniem w branży i wizją, która napędza nasz zespół do realizacji ambitnych projektów."
-                        : "Jakub is the founder and CEO of our company, with extensive experience in the industry and a vision that drives our team to achieve ambitious projects.",
-
-                    imagePath:
-                        'assets/team/Jakub Bagrowski.png', // Ścieżka do zdjęcia
-                    color: Colors.blueAccent,
-                  ),
-                  const SizedBox(height: 40),
-
-                  // Magdalena Kostrzewska
-                  _buildTeamMember(
-                    context: context,
-                    name: "Magdalena Kostrzewska",
-                    position:
-                        isPolish ? "Kierownik Projektu" : "Project Manager",
-                    description: isPolish
-                        ? "Magda jest doświadczonym specjalistą z wieloletnim stażem w branży zarządzania projektami, odpowiedzialnym za nadzór nad kluczowymi realizacjami."
-                        : "Magda is an experienced project management specialist responsible for overseeing key projects with years of industry experience.",
-                    imagePath:
-                        'assets/Team/Magdalena Kostrzewska.png', // Ścieżka do zdjęcia
-                    color: Colors.redAccent,
+                  // Siatka z pracownikami
+                  Column(
+                    children: [
+                      _buildTeamRow(context, screenWidth, [
+                        _buildTeamMember(
+                          context: context,
+                          name: "Jakub Bagrowski",
+                          position: isPolish
+                              ? "Kierownik Zespołu, Szef"
+                              : "Team Leader, Chief Executive",
+                          phone: "+48 123 456 789",
+                          email: "jakub.b@example.com",
+                          color: Colors.blueAccent,
+                          imagePath: 'assets/team/Jakub Bagrowski.png',
+                        ),
+                        _buildTeamMember(
+                          context: context,
+                          name: "Joanna Kasprzyk",
+                          position: isPolish
+                              ? "Kierownik Zarządzania"
+                              : "Management Supervisor",
+                          phone: "+48 987 654 321",
+                          email: "joanna.k@example.com",
+                          color: Colors.redAccent,
+                          imagePath: 'assets/team/pigi.png',
+                        ),
+                      ]),
+                      const SizedBox(height: 20),
+                      Container(height: 1, color: Colors.white54),
+                      const SizedBox(height: 20),
+                      _buildTeamRow(context, screenWidth, [
+                        _buildTeamMember(
+                          context: context,
+                          name: "Magdalena Czermak",
+                          position: isPolish
+                              ? "Kierownik Logistyki"
+                              : "Logistics Manager",
+                          phone: "+48 555 666 777",
+                          email: "magda.k@example.com",
+                          color: Colors.blueAccent,
+                          imagePath: 'assets/team/Magdalena Kostrzewska.png',
+                        ),
+                        _buildTeamMember(
+                          context: context,
+                          name: "Zuzanna Sieradzka",
+                          position: isPolish ? "Asystent" : "Assistant",
+                          phone: "+48 444 555 666",
+                          email: "zuzanna.s@example.com",
+                          color: Colors.redAccent,
+                          imagePath: 'assets/team/pigi.png',
+                        ),
+                      ]),
+                    ],
                   ),
                   const SizedBox(height: 30),
 
@@ -81,7 +114,7 @@ class TeamDialog extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
+                      backgroundColor: Colors.redAccent,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -105,60 +138,121 @@ class TeamDialog extends StatelessWidget {
     );
   }
 
+  Widget _buildTeamRow(
+      BuildContext context, double screenWidth, List<Widget> members) {
+    if (screenWidth > 600) {
+      return Row(
+        children: members
+            .map((member) => Expanded(child: member))
+            .toList()
+            .expand((widget) => [widget, _buildDivider()])
+            .toList()
+          ..removeLast(),
+      );
+    } else {
+      return Column(
+        children: members
+            .map((member) => Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: member,
+                ))
+            .toList(),
+      );
+    }
+  }
+
+  Widget _buildDivider() {
+    return Container(width: 1, height: 100, color: Colors.white54);
+  }
+
   Widget _buildTeamMember({
     required BuildContext context,
     required String name,
     required String position,
-    required String description,
-    required String imagePath, // Nowy parametr dla ścieżki zdjęcia
+    required String phone,
+    required String email,
     required Color color,
+    required String imagePath,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Wyświetlanie zdjęcia pracownika
+        // Zdjęcie z obsługą błędów
         ClipRRect(
-          borderRadius: BorderRadius.circular(50), // Zaokrąglone zdjęcie
+          borderRadius: BorderRadius.circular(50),
           child: Image.asset(
             imagePath,
-            width: 100, // Rozmiar zdjęcia
-            height: 100,
+            width: 70,
+            height: 70,
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return Image.network(
+                'https://via.placeholder.com/70',
+                width: 70,
+                height: 70,
+                fit: BoxFit.cover,
+              );
+            },
           ),
         ),
         const SizedBox(height: 10),
-
-        // Imię i nazwisko
         Text(
           name,
           style: GoogleFonts.openSans(
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: FontWeight.bold,
             color: color,
           ),
+          textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 5),
-
-        // Stanowisko
         Text(
           position,
           style: GoogleFonts.openSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontSize: 14,
             color: Colors.white70,
           ),
+          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 10),
 
-        // Opis
-        Text(
-          description,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.openSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-            color: Colors.white,
-            height: 1.4,
+        // Telefon
+        _buildContactItem(
+          context: context,
+          icon: Icons.phone,
+          text: phone.isNotEmpty ? phone : "Brak numeru",
+          color: Colors.green,
+        ),
+
+        // Email
+        _buildContactItem(
+          context: context,
+          icon: Icons.email,
+          text: email.isNotEmpty ? email : "Brak emaila",
+          color: Colors.blue,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContactItem({
+    required BuildContext context,
+    required IconData icon,
+    required String text,
+    required Color color,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, color: color, size: 18),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            text,
+            style: GoogleFonts.openSans(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
         ),
       ],
