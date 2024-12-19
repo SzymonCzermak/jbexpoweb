@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:jbexpoweb/Section/PartnerSection.dart';
-import 'package:jbexpoweb/Section/VideoSection.dart';
-import 'package:jbexpoweb/Section/TransportSection.dart';
-import 'package:jbexpoweb/Section/PassionSection.dart';
+import 'package:jbexpoweb/MainSection/PartnerSection.dart';
+import 'package:jbexpoweb/MainSection/VideoSection.dart';
+import 'package:jbexpoweb/MainSection/TransportSection.dart';
+import 'package:jbexpoweb/MainSection/PassionSection.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
 import 'package:jbexpoweb/team_dialog.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -90,17 +90,17 @@ class _JBExpoPageState extends State<JBExpoPage> {
             ),
           ),
           Column(
-                  children: [
-                    // AppBar
-                    ResponsiveAppBar(
-        isPolish: isPolish,
-        toggleLanguage: (newValue) {
-          setState(() {
-            isPolish = newValue;
-          });
-        },
-        pageController: _pageController, // Przekazano kontroler
-      ),
+            children: [
+              // AppBar
+              ResponsiveAppBar(
+                isPolish: isPolish,
+                toggleLanguage: (newValue) {
+                  setState(() {
+                    isPolish = newValue;
+                  });
+                },
+                pageController: _pageController, // Przekazano kontroler
+              ),
 
               Expanded(
                 child: GestureDetector(

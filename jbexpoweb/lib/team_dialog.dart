@@ -65,7 +65,7 @@ class TeamDialog extends StatelessWidget {
                               ? "Kierownik Zespołu, Szef"
                               : "Team Leader, Chief Executive",
                           phone: "+48 123 456 789",
-                          email: "jakub.b@example.com",
+                          email: "jbexpo@jbexpo.pl",
                           color: Colors.blueAccent,
                           imagePath: 'assets/team/Jakub Bagrowski.png',
                         ),
@@ -75,8 +75,8 @@ class TeamDialog extends StatelessWidget {
                           position: isPolish
                               ? "Kierownik Zarządzania"
                               : "Management Supervisor",
-                          phone: "+48 987 654 321",
-                          email: "joanna.k@example.com",
+                          phone: "+48 786 669 657",
+                          email: "jbexpoplus@gmail.com",
                           color: Colors.redAccent,
                           imagePath: 'assets/team/pigi.png',
                         ),
@@ -92,7 +92,7 @@ class TeamDialog extends StatelessWidget {
                               ? "Kierownik Logistyki"
                               : "Logistics Manager",
                           phone: "+48 555 666 777",
-                          email: "magda.k@example.com",
+                          email: "jbexpoplus.biuro@gmail.com ",
                           color: Colors.blueAccent,
                           imagePath: 'assets/team/Magdalena Kostrzewska.png',
                         ),
@@ -100,8 +100,8 @@ class TeamDialog extends StatelessWidget {
                           context: context,
                           name: "Zuzanna Sieradzka",
                           position: isPolish ? "Asystent" : "Assistant",
-                          phone: "+48 444 555 666",
-                          email: "zuzanna.s@example.com",
+                          phone: "+48 515 367 526",
+                          email: "jbexpoplus.office@gmail.com",
                           color: Colors.redAccent,
                           imagePath: 'assets/team/pigi.png',
                         ),

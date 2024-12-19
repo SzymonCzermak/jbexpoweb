@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jbexpoweb/WorkSection/TransportSection.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
 import 'package:jbexpoweb/team_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -121,7 +122,12 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: TextButton(
               onPressed: () {
-                pageController.jumpToPage(3); // Indeks sekcji "Jak działamy"
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HowWeWorkPage(isPolish: isPolish),
+                  ),
+                );
               },
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -236,7 +242,13 @@ class ResponsiveAppBar extends StatelessWidget implements PreferredSizeWidget {
                     ),
                     onTap: () {
                       Navigator.of(context).pop();
-                      pageController.jumpToPage(2); // Indeks sekcji "Jak działamy"
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              HowWeWorkPage(isPolish: isPolish),
+                        ),
+                      );
                     },
                   ),
                 ),
