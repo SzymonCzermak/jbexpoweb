@@ -59,7 +59,7 @@ class _ExhibitionLogosSectionState extends State<PartnerSection> {
         ? 60.0
         : screenWidth * 0.07; // Zmniejsz rozmiar tekstu na małych ekranach
     final smallFontSize =
-        fontSize * 0.7; // Mniejszy rozmiar czcionki dla drugiego tekstu
+        fontSize * 0.6; // Mniejszy rozmiar czcionki dla drugiego tekstu
     final imageSize = screenWidth > 600
         ? 500.0
         : screenWidth * 0.6; // Zmniejsz rozmiar logotypów na małych ekranach
@@ -88,7 +88,7 @@ class _ExhibitionLogosSectionState extends State<PartnerSection> {
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.michroma(
                       fontSize: fontSize * 1.2, // Większy rozmiar czcionki
                       color: const Color.fromARGB(255, 216, 216, 216),
                       fontWeight: FontWeight.bold,
@@ -103,7 +103,7 @@ class _ExhibitionLogosSectionState extends State<PartnerSection> {
                         text: widget.isPolish
                             ? "czołowych targach europejskich"
                             : "leading European trade fairs",
-                        style: GoogleFonts.openSans(
+                        style: GoogleFonts.michroma(
                           color: const Color.fromARGB(
                               255, 161, 151, 0), // Złoty kolor
                           fontWeight: FontWeight.bold,
@@ -112,13 +112,13 @@ class _ExhibitionLogosSectionState extends State<PartnerSection> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 8), // Odstęp między tekstami
+                const SizedBox(height: 10), // Odstęp między tekstami
 
                 // Tekst poniżej z mniejszą czcionką
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: GoogleFonts.openSans(
+                    style: GoogleFonts.michroma(
                       fontSize: smallFontSize, // Mniejszy rozmiar czcionki
                       color: const Color.fromARGB(255, 216, 216, 216),
                     ),

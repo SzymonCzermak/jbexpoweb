@@ -111,7 +111,7 @@ class _TransportSectionState extends State<TransportSection>
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: Text(
-        "TRANSPORT",
+        "PORTFOLIO",
         style: GoogleFonts.michroma(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
