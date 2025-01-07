@@ -5,17 +5,66 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart';
 import 'package:jbexpoweb/FooterWidget.dart';
 
-class AboutUsPage extends StatelessWidget {
+class AboutUsPage extends StatefulWidget {
   final bool isPolish;
 
   const AboutUsPage({Key? key, required this.isPolish}) : super(key: key);
+
+  @override
+  _AboutUsPageState createState() => _AboutUsPageState();
+}
+
+class _AboutUsPageState extends State<AboutUsPage>
+    with SingleTickerProviderStateMixin {
+  late List<bool> _visibleList;
+  late AnimationController _shakeController;
+  late Animation<double> _shakeAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Lista kontrolująca widoczność każdej kafelki
+    _visibleList = List.filled(4, false);
+    _triggerAnimations();
+
+    // Inicjalizacja kontrolera animacji dla efektu trzęsienia
+    _shakeController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+
+    _shakeAnimation = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: 10), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 10, end: -10), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -10, end: 5), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: 5, end: -5), weight: 1),
+      TweenSequenceItem(tween: Tween(begin: -5, end: 0), weight: 1),
+    ]).animate(_shakeController);
+  }
+
+  Future<void> _triggerAnimations() async {
+    for (int i = 0; i < _visibleList.length; i++) {
+      await Future.delayed(
+          const Duration(milliseconds: 200)); // Opóźnienie między kafelkami
+      setState(() {
+        _visibleList[i] = true; // Ustaw widoczność dla kolejnych kafelków
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _shakeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, String>> teamMembers = [
       {
         "name": "Jakub Bagrowski",
-        "position": isPolish
+        "position": widget.isPolish
             ? "Kierownik Zespołu, Szef"
             : "Team Leader, Chief Executive",
         "phone": "+48 123 456 789",
@@ -25,24 +74,25 @@ class AboutUsPage extends StatelessWidget {
       {
         "name": "Joanna Kasprzyk",
         "position":
-            isPolish ? "Kierownik Zarządzania" : "Management Supervisor",
+            widget.isPolish ? "Kierownik Zarządzania" : "Management Supervisor",
         "phone": "+48 786 669 657",
         "email": "jbexpoplus@gmail.com",
-        "image": "assets/team/pigi.png",
+        "image": "assets/pigi.png",
       },
       {
         "name": "Magdalena Kostrzewska",
-        "position": isPolish ? "Kierownik Logistyki" : "Logistics Manager",
+        "position":
+            widget.isPolish ? "Kierownik Logistyki" : "Logistics Manager",
         "phone": "+48 555 666 777",
         "email": "jbexpoplus.biuro@gmail.com",
         "image": "assets/MagdalenaKostrzewska.png",
       },
       {
         "name": "Zuzanna Sieradzka",
-        "position": isPolish ? "Asystent" : "Assistant",
+        "position": widget.isPolish ? "Asystent" : "Assistant",
         "phone": "+48 515 367 526",
         "email": "jbexpoplus.office@gmail.com",
-        "image": "assets/team/pigi.png",
+        "image": "assets/pigi.png",
       },
     ];
 
@@ -97,7 +147,7 @@ class AboutUsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          isPolish ? "Kilka słów o nas" : "A Few Words About Us",
+          widget.isPolish ? "Kilka słów o nas" : "A Few Words About Us",
           style: GoogleFonts.michroma(
             fontSize: MediaQuery.of(context).size.width > 800 ? 80 : 36,
             fontWeight: FontWeight.bold,
@@ -107,7 +157,7 @@ class AboutUsPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          isPolish
+          widget.isPolish
               ? "Naszą pasją jest tworzenie przestrzeni, które odzwierciedlają Twoje wartości"
               : "Our passion is creating spaces that reflect your values",
           style: GoogleFonts.michroma(
@@ -135,7 +185,7 @@ class AboutUsPage extends StatelessWidget {
     return Align(
       alignment: Alignment.center,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 800),
+        constraints: const BoxConstraints(maxWidth: 625),
         child: GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -143,12 +193,31 @@ class AboutUsPage extends StatelessWidget {
             crossAxisCount: MediaQuery.of(context).size.width < 600 ? 1 : 2,
             mainAxisSpacing: 16,
             crossAxisSpacing: 16,
-            childAspectRatio: 3 / 4,
+            childAspectRatio: 4 / 5,
           ),
           itemCount: teamMembers.length,
           itemBuilder: (context, index) {
             final member = teamMembers[index];
-            return _buildTeamCard(member, context);
+            return GestureDetector(
+              onTap: () {
+                _shakeController.reset();
+                _shakeController.forward(); // Uruchomienie animacji trzęsienia
+              },
+              child: AnimatedBuilder(
+                animation: _shakeAnimation,
+                builder: (context, child) {
+                  return Transform.translate(
+                    offset: Offset(_shakeAnimation.value, 0), // Ruch poziomy
+                    child: AnimatedOpacity(
+                      opacity: _visibleList[index] ? 1 : 0,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeInOut,
+                      child: _buildTeamCard(member, context),
+                    ),
+                  );
+                },
+              ),
+            );
           },
         ),
       ),
@@ -158,7 +227,7 @@ class AboutUsPage extends StatelessWidget {
   Widget _buildTeamCard(Map<String, String> member, BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(80),
+        borderRadius: BorderRadius.circular(50),
         gradient: const LinearGradient(
           colors: [
             Color.fromARGB(158, 0, 0, 0),
@@ -169,50 +238,50 @@ class AboutUsPage extends StatelessWidget {
         ),
         border: Border.all(
           color: const Color.fromARGB(255, 194, 181, 0),
-          width: 2,
+          width: 1.5,
         ),
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ClipRRect(
-            borderRadius: BorderRadius.circular(60),
+            borderRadius: BorderRadius.circular(50),
             child: Image.asset(
               member["image"]!,
-              width: 180,
-              height: 180,
+              width: 150,
+              height: 150,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Image.network(
-                  'https://via.placeholder.com/180',
-                  width: 180,
-                  height: 180,
+                  'https://via.placeholder.com/150',
+                  width: 150,
+                  height: 150,
                   fit: BoxFit.cover,
                 );
               },
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
             member["name"]!,
             style: GoogleFonts.openSans(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           Text(
             member["position"]!,
             style: GoogleFonts.openSans(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.white70,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           _buildContactItem(
             context: context,
             icon: Icons.phone,
@@ -267,7 +336,7 @@ class AboutUsPage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    isPolish
+                    widget.isPolish
                         ? "Skopiowano do schowka!"
                         : "Copied to clipboard!",
                   ),
