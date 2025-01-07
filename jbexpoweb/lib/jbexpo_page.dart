@@ -1,16 +1,21 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:jbexpoweb/MainSection/ContactUsSection.dart';
+import 'package:jbexpoweb/MainSection/EndSection.dart';
 import 'package:jbexpoweb/MainSection/PartnerSection.dart';
 import 'package:jbexpoweb/MainSection/VideoSection.dart';
-import 'package:jbexpoweb/MainSection/TransportSection.dart';
+import 'package:jbexpoweb/MainSection/PortfolioSec.dart';
 import 'package:jbexpoweb/MainSection/PassionSection.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class JBExpoPage extends StatefulWidget {
   final bool isPolish;
+  final Function(int) onNavigate; // Dodanie onNavigate jako parametru
 
-  const JBExpoPage({Key? key, required this.isPolish}) : super(key: key);
+  const JBExpoPage({
+    Key? key,
+    required this.isPolish,
+    required this.onNavigate, // Dodanie onNavigate w konstruktorze
+  }) : super(key: key);
 
   @override
   State<JBExpoPage> createState() => _JBExpoPageState();
@@ -81,7 +86,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
-              itemCount: 5,
+              itemCount: 5, // Liczba sekcji
               itemBuilder: (context, index) {
                 switch (index) {
                   case 0:
@@ -91,9 +96,14 @@ class _JBExpoPageState extends State<JBExpoPage> {
                   case 2:
                     return PartnerSection(isPolish: widget.isPolish);
                   case 3:
-                    return TransportSection(isPolish: widget.isPolish);
+                    return PortfolioSec(
+                      isPolish: widget.isPolish,
+                      onNavigate: widget.onNavigate, // Przekazanie onNavigate
+                    );
                   case 4:
-                    return ContactUsSection(isPolish: widget.isPolish);
+                    return EndSection(
+                      isPolish: widget.isPolish,
+                    ); // Zamiana FooterWidget na EndSection
                   default:
                     return const SizedBox();
                 }
@@ -106,7 +116,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
           top: MediaQuery.of(context).size.height / 2 - 40,
           child: SmoothPageIndicator(
             controller: _pageController,
-            count: 5,
+            count: 5, // Zwiększamy liczbę sekcji o stopkę
             axisDirection: Axis.vertical,
             effect: WormEffect(
               activeDotColor: Colors.redAccent,

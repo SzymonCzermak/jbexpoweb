@@ -1,7 +1,7 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jbexpoweb/responsive_appbar.dart';
+import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart'; // Import biblioteki
+import 'package:jbexpoweb/FooterWidget.dart'; // Import stopki
 
 class HowWeWorkPage extends StatefulWidget {
   final bool isPolish;
@@ -17,25 +17,24 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
   late bool isPolish;
   late AnimationController _controller;
   late List<Animation<double>> _opacityAnimations;
-  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     isPolish = widget.isPolish; // Inicjalizacja języka
     _controller = AnimationController(
-      duration: const Duration(seconds: 12),
+      duration: const Duration(seconds: 5),
       vsync: this,
     );
 
     _opacityAnimations = List.generate(
-      8,
+      7, // Tylko 7 sekcji (bez przycisku na końcu)
       (index) => Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(
           parent: _controller,
           curve: Interval(
-            index / 8,
-            (index + 1) / 8,
+            index / 7,
+            (index + 1) / 7,
             curve: Curves.easeOutQuart,
           ),
         ),
@@ -58,112 +57,121 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
   @override
   void dispose() {
     _controller.dispose();
-    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Listener(
-        onPointerSignal: (pointerSignal) {
-          if (pointerSignal is PointerScrollEvent) {
-            _scrollController.jumpTo(
-              _scrollController.offset + pointerSignal.scrollDelta.dy,
-            );
-          }
-        },
-        child: GestureDetector(
-          onVerticalDragUpdate: (details) {
-            _scrollController.jumpTo(
-              _scrollController.offset - details.primaryDelta!,
-            );
-          },
-          child: Stack(
-            children: [
-              // Tło
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/Background3.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Column(
-                children: [
-                  // Główna zawartość
-                  Expanded(
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      physics: const ClampingScrollPhysics(),
-                      itemCount: 8,
-                      itemBuilder: (context, index) {
-                        if (index < 7) {
-                          return FadeTransition(
-                            opacity: _opacityAnimations[index],
-                            child: Column(
-                              children: [
-                                _buildResponsiveSection(
-                                  number: index + 1,
-                                  title: _getTitle(index + 1),
-                                  description: _getDescription(index + 1),
-                                  imagePath: _getImagePath(index + 1),
-                                ),
-                                if (index < 6) _buildArrowBetweenSections(),
-                              ],
-                            ),
-                          );
-                        } else {
-                          return FadeTransition(
-                            opacity: _opacityAnimations[index],
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 20.0),
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 194, 181, 0),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 15.0,
-                                    horizontal: 30.0,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                ),
-                                child: Text(
-                                  isPolish
-                                      ? "Powrót do strony głównej"
-                                      : "Go to Next Page",
-                                  style: GoogleFonts.michroma(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black.withOpacity(0.5),
-                                        offset: const Offset(2, 2),
-                                        blurRadius: 50,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                      },
+      body: DynMouseScroll(
+        builder: (context, controller, physics) {
+          return SingleChildScrollView(
+            controller: controller,
+            physics: physics,
+            child: Stack(
+              children: [
+                // Tło
+                Positioned.fill(
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/Background3.png'),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
-        ),
+                ),
+                // Główna zawartość
+                Column(
+                  children: [
+                    const SizedBox(height: 60),
+
+                    // Nagłówek na górze strony
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          isPolish ? "Sposób naszej pracy" : "How We Work",
+                          style: GoogleFonts.michroma(
+                            fontSize: MediaQuery.of(context).size.width > 800
+                                ? 80
+                                : 36, // Duży rozmiar dla szerokich ekranów
+                            fontWeight: FontWeight.bold,
+                            color: const Color.fromARGB(255, 194, 181, 0),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(
+                            height: 8), // Odstęp między tytułem a opisem
+                        Text(
+                          isPolish
+                              ? "Zobacz, jak realizujemy Twoje targowe marzenia"
+                              : "See how we make your trade show dreams come true",
+                          style: GoogleFonts.michroma(
+                            fontSize: MediaQuery.of(context).size.width > 800
+                                ? 24
+                                : 16, // Mniejszy rozmiar tekstu
+                            fontWeight: FontWeight.normal,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 20.0),
+                          child: Divider(
+                            color: Color.fromARGB(
+                                255, 255, 255, 255), // Kolor kreski
+                            thickness: 2, // Grubość kreski
+                            indent: 50, // Wcięcie od lewej
+                            endIndent: 50, // Wcięcie od prawej
+                          ),
+                        ), // Odstęp przed sekcjami
+                      ],
+                    ),
+
+                    // Sekcje wyświetlane z animacjami
+                    Align(
+                      alignment: Alignment.center,
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 1200),
+                        child: Column(
+                          children: [
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: 7, // Tylko 7 elementów
+                              itemBuilder: (context, index) {
+                                return FadeTransition(
+                                  opacity: _opacityAnimations[index],
+                                  child: Column(
+                                    children: [
+                                      _buildResponsiveSection(
+                                        number: index + 1,
+                                        title: _getTitle(index + 1),
+                                        description: _getDescription(index + 1),
+                                        imagePath: _getImagePath(index + 1),
+                                      ),
+                                      if (index < 6)
+                                        _buildArrowBetweenSections(),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 40), // Odstęp przed stopką
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Dodana stopka
+                    const FooterWidget(),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -238,72 +246,57 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
     required String description,
     required String imagePath,
   }) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double horizontalMargin = constraints.maxWidth > 1200 ? 350.0 : 40.0;
-        double titleFontSize = constraints.maxWidth > 800 ? 80.0 : 35.0;
-        double descFontSize = constraints.maxWidth > 800 ? 18.0 : 10.0;
-
-        double imageWidth = constraints.maxWidth * 0.45;
-        double imageHeight = constraints.maxWidth * 0.25;
-
-        return Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: 20.0, horizontal: horizontalMargin),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.michroma(
-                  fontSize: titleFontSize,
-                  fontWeight: FontWeight.bold,
-                  color: const Color.fromARGB(255, 194, 181, 0),
-                ),
-              ),
-              const SizedBox(height: 25),
-              Container(
-                width: imageWidth,
-                height: imageHeight,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color.fromARGB(134, 194, 181, 0),
-                    width: 3,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color:
-                          const Color.fromARGB(255, 97, 90, 0).withOpacity(0.5),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 25),
-              Text(
-                description,
-                style: GoogleFonts.michroma(
-                  fontSize: descFontSize,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 1),
-            ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.michroma(
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+              color: const Color.fromARGB(255, 194, 181, 0),
+            ),
           ),
-        );
-      },
+          const SizedBox(height: 25),
+          Container(
+            width: 600,
+            height: 300,
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color.fromARGB(134, 194, 181, 0),
+                width: 3,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 97, 90, 0).withOpacity(0.5),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: 25),
+          Text(
+            description,
+            style: GoogleFonts.michroma(
+              fontSize: 18,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 

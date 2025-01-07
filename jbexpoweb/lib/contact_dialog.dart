@@ -20,14 +20,21 @@ class ContactDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          gradient: borderGradient,
+          gradient: const LinearGradient(
+            colors: [
+              Color.fromARGB(255, 255, 215, 0), // Złoty początek gradientu
+              Color.fromARGB(255, 218, 165, 32), // Złoty koniec gradientu
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.all(3),
+        padding: const EdgeInsets.all(2), // Cieńsza ramka
         child: Container(
           decoration: BoxDecoration(
             color: Colors.black,
-            borderRadius: BorderRadius.circular(17),
+            borderRadius: BorderRadius.circular(18),
           ),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
@@ -42,7 +49,7 @@ class ContactDialog extends StatelessWidget {
                     style: GoogleFonts.openSans(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.redAccent,
+                      color: const Color.fromARGB(255, 60, 255, 0),
                     ),
                   ),
                   const SizedBox(height: 20),

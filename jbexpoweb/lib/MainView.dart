@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jbexpoweb/AboutUsPage/AboutUsPage.dart';
+import 'package:jbexpoweb/CompanyLocationPage.dart';
 import 'package:jbexpoweb/StaticAppBar.dart';
 import 'package:jbexpoweb/jbexpo_page.dart';
 import 'package:jbexpoweb/PortfolioSection/PortfolioSection.dart';
@@ -12,24 +14,49 @@ class MainView extends StatefulWidget {
 }
 
 class _MainViewState extends State<MainView> {
-  int _currentIndex = 0;
+  int _currentIndex = 0; // Aktualnie wybrana zakładka
   bool _isPolish = true; // Flaga języka
 
-  final List<Widget> _pages = [
-    JBExpoPage(isPolish: true),
-    HowWeWorkPage(isPolish: true),
-    PortfolioPage(isPolish: true),
-  ];
+  late final List<Widget> _pages;
 
+  @override
+  void initState() {
+    super.initState();
+
+    // Tworzymy listę stron z przekazaniem funkcji onNavigate do JBExpoPage
+    _pages = [
+      JBExpoPage(
+        isPolish: _isPolish,
+        onNavigate: _navigateTo, // Przekazujemy nawigację
+      ),
+      HowWeWorkPage(isPolish: _isPolish),
+      PortfolioPage(isPolish: _isPolish),
+      AboutUsPage(isPolish: _isPolish),
+      CompanyLocationWebPage(isPolish: _isPolish), // Lokalizacja firmy
+    ];
+  }
+
+  // Obsługa nawigacji między zakładkami
   void _navigateTo(int index) {
     setState(() {
-      _currentIndex = index;
+      _currentIndex = index; // Zmieniamy indeks aktualnej strony
     });
   }
 
+  // Obsługa zmiany języka
   void _toggleLanguage(bool value) {
     setState(() {
       _isPolish = value;
+
+      // Odświeżamy język na każdej stronie
+      _pages[0] = JBExpoPage(
+        isPolish: _isPolish,
+        onNavigate: _navigateTo,
+      );
+      _pages[1] = HowWeWorkPage(isPolish: _isPolish);
+      _pages[2] = PortfolioPage(isPolish: _isPolish);
+      _pages[3] = AboutUsPage(isPolish: _isPolish);
+      _pages[4] = CompanyLocationWebPage(isPolish: _isPolish);
     });
   }
 
@@ -37,24 +64,14 @@ class _MainViewState extends State<MainView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: StaticAppBar(
-        currentIndex: _currentIndex,
-        onNavigate: _navigateTo,
-        isPolish: _isPolish,
-        toggleLanguage: _toggleLanguage, // Przekazanie obsługi zmiany języka
+        currentIndex: _currentIndex, // Aktualny indeks strony
+        onNavigate: _navigateTo, // Funkcja nawigacji
+        isPolish: _isPolish, // Flaga języka
+        toggleLanguage: _toggleLanguage, // Funkcja zmiany języka
       ),
       body: IndexedStack(
-        index: _currentIndex,
-        children: _pages.map((page) {
-          if (page is JBExpoPage) {
-            return JBExpoPage(isPolish: _isPolish);
-          } else if (page is HowWeWorkPage) {
-            return HowWeWorkPage(isPolish: _isPolish);
-          } else if (page is PortfolioPage) {
-            return PortfolioPage(isPolish: _isPolish);
-          } else {
-            return const SizedBox.shrink();
-          }
-        }).toList(),
+        index: _currentIndex, // Wyświetlana strona na podstawie indeksu
+        children: _pages,
       ),
     );
   }

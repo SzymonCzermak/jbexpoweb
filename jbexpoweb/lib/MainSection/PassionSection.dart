@@ -30,7 +30,7 @@ class _ServicesSectionState extends State<PassionSection>
     );
 
     _cardOpacities = List.generate(6, (index) {
-      final startInterval = 0.4 + (index * 0.1);
+      final startInterval = 0.2 + (index * 0.1);
       return Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
           parent: _controller,
@@ -52,129 +52,118 @@ class _ServicesSectionState extends State<PassionSection>
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final bool isSmallScreen = screenWidth < 600;
+    final int columns = isSmallScreen ? 2 : 3; // Kolumny zależne od ekranu
+    final double iconSize = isSmallScreen ? 20.0 : 40.0;
 
-    // Obliczenie dynamicznego odstępu
-    final double topSpacing = screenWidth < 600
-        ? 20.0
-        : screenHeight * 0.05; // Większa przerwa dla większych ekranów
+    // Dynamiczne marginesy
+    final double horizontalPadding = isSmallScreen ? 16.0 : screenWidth * 0.1;
 
-    final double titleFontSize = screenWidth * 0.07;
-    final double subtitleFontSize = screenWidth * 0.03;
-    final double cardTitleFontSize = screenWidth * 0.035;
-    final double cardDescriptionFontSize = screenWidth * 0.025;
-    final double iconSize = screenWidth < 300
-        ? 12.0 // Bardzo małe gwiazdki na małych ekranach
-        : (screenWidth < 400
-            ? 20.0 // Średni rozmiar gwiazdek
-            : 30.0); // Duży rozmiar na większych ekranach
-
-    // Dynamika układu
-    final int columns = screenWidth < 600 ? 2 : 3;
-    final double spacing = screenWidth < 600 ? 10 : 20;
-    final double runSpacing =
-        screenWidth < 600 ? 15 : 100; // Dynamiczny odstęp między wierszami
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(height: topSpacing), // Dynamiczny odstęp od góry
-        FadeTransition(
-          opacity: _controller,
-          child: Column(
-            children: [
-              Text(
-                widget.isPolish
-                    ? 'Pasja do tworzenia przestrzeni'
-                    : 'A passion for creating spaces',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.dancingScript(
-                  fontSize: titleFontSize.clamp(45.0, 120.0),
-                  fontWeight: FontWeight.w700,
-                  color: widget.color,
-                ),
-              ),
-              const SizedBox(height: 12),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'Nasz kompleksowy pakiet usług '
-                          : 'Our comprehensive suite of professional services ',
-                      style: GoogleFonts.openSans(
-                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: widget.color, // Domyślny kolor
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'skierowany jest do szerokiej gamy klientów, '
-                          : 'caters to a diverse clientele, ',
-                      style: GoogleFonts.openSans(
-                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(
-                            255, 161, 151, 0), // Wyróżniony kolor
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'od właścicieli domów po deweloperów komercyjnych.'
-                          : 'ranging from homeowners to commercial developers.',
-                      style: GoogleFonts.openSans(
-                        fontSize: subtitleFontSize.clamp(1.0, 18.0),
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: widget.color, // Domyślny kolor
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 35),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: screenWidth < 600
-              ? 1 // Mniejsza przerwa na małych ekranach
-              : 40, // Większa przerwa na dużych ekranach
-        ),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            double itemWidth = (constraints.maxWidth / columns) - spacing;
-
-            return Wrap(
-              spacing: spacing,
-              runSpacing: runSpacing, // Zmienny odstęp między wierszami
-              alignment: WrapAlignment.center,
-              children: [
-                for (int i = 0; i < 6; i++)
-                  FadeTransition(
-                    opacity: _cardOpacities[i],
-                    child: SizedBox(
-                      width: itemWidth,
-                      child: _ServiceCard(
-                        title: _getTitle(i),
-                        description: _getDescription(i),
-                        color: widget.color,
-                        cardTitleFontSize: cardTitleFontSize,
-                        cardDescriptionFontSize: cardDescriptionFontSize,
-                        iconSize: iconSize,
-                      ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FadeTransition(
+              opacity: _controller,
+              child: Column(
+                children: [
+                  Text(
+                    widget.isPolish
+                        ? 'Pasja do tworzenia przestrzeni'
+                        : 'A passion for creating spaces',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.michroma(
+                      fontSize: isSmallScreen ? 36.0 : 80.0,
+                      fontWeight: FontWeight.bold,
+                      color: widget.color,
                     ),
                   ),
-              ],
-            );
-          },
+                  const SizedBox(height: 12),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: widget.isPolish
+                              ? 'Nasz kompleksowy pakiet usług '
+                              : 'Our comprehensive suite of professional services ',
+                          style: GoogleFonts.michroma(
+                            fontSize: isSmallScreen ? 14.0 : 18.0,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color: widget.color,
+                          ),
+                        ),
+                        TextSpan(
+                          text: widget.isPolish
+                              ? 'skierowany jest do szerokiej gamy klientów, '
+                              : 'caters to a diverse clientele, ',
+                          style: GoogleFonts.michroma(
+                            fontSize: isSmallScreen ? 14.0 : 18.0,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color: const Color.fromARGB(255, 161, 151, 0),
+                          ),
+                        ),
+                        TextSpan(
+                          text: widget.isPolish
+                              ? 'od właścicieli domów po deweloperów komercyjnych.'
+                              : 'ranging from homeowners to commercial developers.',
+                          style: GoogleFonts.michroma(
+                            fontSize: isSmallScreen ? 14.0 : 18.0,
+                            fontWeight: FontWeight.w400,
+                            height: 1.5,
+                            color: widget.color,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                    child: Divider(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      thickness: 2,
+                      indent: 50,
+                      endIndent: 50,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                double itemWidth =
+                    (constraints.maxWidth - (columns - 1) * 20) / columns;
+
+                return Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 20.0,
+                  runSpacing: 20.0,
+                  children: [
+                    for (int i = 0; i < 6; i++)
+                      FadeTransition(
+                        opacity: _cardOpacities[i],
+                        child: SizedBox(
+                          width: itemWidth,
+                          child: _AnimatedServiceCard(
+                            title: _getTitle(i),
+                            description: _getDescription(i),
+                            color: widget.color,
+                            iconSize: iconSize,
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -211,7 +200,7 @@ class _ServicesSectionState extends State<PassionSection>
         : [
             'We create innovative solutions for the future.',
             'We provide support at every stage of the project.',
-            'We achieve excellent results in a short time',
+            'We achieve excellent results in a short time.',
             'Professional consulting tailored to individual needs.',
             'Efficient project management for guaranteed success.',
             'We offer the highest quality services and full commitment to every project.'
@@ -219,30 +208,26 @@ class _ServicesSectionState extends State<PassionSection>
   }
 }
 
-class _ServiceCard extends StatefulWidget {
+class _AnimatedServiceCard extends StatefulWidget {
   final String title;
   final String description;
   final Color color;
-  final double cardTitleFontSize;
-  final double cardDescriptionFontSize;
   final double iconSize;
 
-  const _ServiceCard({
+  const _AnimatedServiceCard({
     Key? key,
     required this.title,
     required this.description,
     required this.color,
-    required this.cardTitleFontSize,
-    required this.cardDescriptionFontSize,
     required this.iconSize,
   }) : super(key: key);
 
   @override
-  State<_ServiceCard> createState() => _ServiceCardState();
+  State<_AnimatedServiceCard> createState() => _AnimatedServiceCardState();
 }
 
-class _ServiceCardState extends State<_ServiceCard> {
-  bool isHovered = false; // Flaga dla efektu najechania
+class _AnimatedServiceCardState extends State<_AnimatedServiceCard> {
+  bool isHovered = false;
 
   void _onHover(bool hovering) {
     setState(() {
@@ -252,47 +237,63 @@ class _ServiceCardState extends State<_ServiceCard> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+    final bool isMobile =
+        screenWidth < 600; // Ekrany o szerokości poniżej 600px
+
+    final double iconSize = isMobile ? widget.iconSize * 0.6 : widget.iconSize;
+    final double titleFontSize = isMobile ? 12.0 : 16.0;
+    final double descriptionFontSize = isMobile ? 8.0 : 12.0;
+
     return GestureDetector(
-      onTap: () => _onHover(!isHovered), // Kliknięcie na ekranach dotykowych
+      onTap: () => _onHover(!isHovered),
       child: MouseRegion(
         onEnter: (_) => _onHover(true),
         onExit: (_) => _onHover(false),
         child: AnimatedScale(
           scale: isHovered ? 1.1 : 1.0,
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 150),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
                 Icons.star,
-                size: widget.iconSize.clamp(6.0, 30.0),
-                color:
-                    isHovered ? Color.fromARGB(255, 194, 181, 0) : widget.color,
+                size: iconSize,
+                color: isHovered
+                    ? const Color.fromARGB(255, 194, 181, 0)
+                    : widget.color,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(
+                  height: 8), // Mniejszy odstęp dla mniejszych ekranów
               AnimatedDefaultTextStyle(
-                style: GoogleFonts.montserrat(
-                  fontSize: widget.cardTitleFontSize.clamp(8.0, 20.0),
+                duration: const Duration(milliseconds: 200),
+                style: GoogleFonts.michroma(
+                  fontSize: titleFontSize,
                   fontWeight: isHovered ? FontWeight.bold : FontWeight.w500,
                   color: isHovered
-                      ? Color.fromARGB(255, 194, 181, 0)
+                      ? const Color.fromARGB(255, 194, 181, 0)
                       : widget.color,
                 ),
-                duration: const Duration(milliseconds: 200),
-                child: Text(widget.title, textAlign: TextAlign.center),
+                child: Text(
+                  widget.title,
+                  textAlign: TextAlign.center,
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6), // Mniejszy odstęp dla opisu
               AnimatedDefaultTextStyle(
-                style: GoogleFonts.openSans(
-                  fontSize: widget.cardDescriptionFontSize.clamp(6.0, 16.0),
-                  fontWeight: isHovered ? FontWeight.w600 : FontWeight.w400,
-                  color: isHovered
-                      ? Color.fromARGB(255, 194, 181, 0)
-                      : widget.color,
-                  height: 1.4,
-                ),
                 duration: const Duration(milliseconds: 200),
-                child: Text(widget.description, textAlign: TextAlign.center),
+                style: GoogleFonts.michroma(
+                  fontSize: descriptionFontSize,
+                  fontWeight: FontWeight.w400,
+                  color: isHovered
+                      ? const Color.fromARGB(255, 194, 181, 0)
+                      : widget.color,
+                  height: 1.3,
+                ),
+                child: Text(
+                  widget.description,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ],
           ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jbexpoweb/CompanyLocationPage.dart';
+import 'package:jbexpoweb/contact_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -19,7 +22,7 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isSmallScreen = screenWidth < 800;
+    final bool isSmallScreen = screenWidth < 1400;
 
     return AppBar(
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
@@ -27,6 +30,7 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       title: Row(
         children: [
+          const SizedBox(width: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Image.asset(
@@ -35,53 +39,162 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
               fit: BoxFit.contain,
             ),
           ),
+          const Spacer(),
         ],
       ),
       actions: [
         if (!isSmallScreen) ...[
+          // Large screen layout
+          const SizedBox(
+            height: 20,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 5,
+            ),
+          ),
           _buildNavButton(
             context,
             0,
             isPolish ? "Strona główna" : "Home",
+            Icons.home_outlined,
             Icons.home,
             currentIndex == 0,
+          ),
+          const SizedBox(
+            height: 20,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 5,
+            ),
           ),
           _buildNavButton(
             context,
             1,
             isPolish ? "Jak działamy" : "How We Work",
             Icons.work_outline,
+            Icons.work,
             currentIndex == 1,
+          ),
+          const SizedBox(
+            height: 20,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 5,
+            ),
           ),
           _buildNavButton(
             context,
             2,
             isPolish ? "Portfolio" : "Portfolio",
             Icons.photo_album_outlined,
+            Icons.photo_album,
             currentIndex == 2,
           ),
-          _buildIconWithTextButton(
+          const SizedBox(
+            height: 20,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 5,
+            ),
+          ),
+          _buildNavButton(
             context,
-            Icons.contact_mail,
-            isPolish ? "Kontakt" : "Contact",
-            onTap: () {
-              Navigator.pushNamed(context, '/contact');
-            },
+            3,
+            isPolish ? "O nas" : "About Us",
+            Icons.info_outline,
+            Icons.info,
+            currentIndex == 3,
+          ),
+          const SizedBox(
+            height: 20,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 5,
+            ),
+          ),
+          _buildNavButton(
+            context,
+            4, // Indeks strony lokalizacji w MainView
+            isPolish ? "Lokalizacja" : "Location",
+            Icons.location_on_outlined,
+            Icons.location_on,
+            currentIndex == 4,
+          ),
+          const SizedBox(
+            height: 40,
+            child: VerticalDivider(
+              color: Colors.white,
+              thickness: 1,
+              width: 40,
+            ),
           ),
           _buildIconWithTextButton(
             context,
-            Icons.public,
-            isPolish ? "Strona Google" : "Google Page",
+            FontAwesomeIcons.envelope,
+            isPolish ? "Kontakt" : "Contact",
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return ContactDialog(
+                    isPolish: isPolish,
+                    borderGradient: const LinearGradient(
+                      colors: [Colors.blueAccent, Colors.redAccent],
+                    ),
+                  );
+                },
+              );
+            },
+            color: Colors.green, // Dodano zielony kolor dla ikony kontaktu
+          ),
+
+          _buildIconWithTextButton(
+            context,
+            FontAwesomeIcons.xTwitter,
+            "X",
+            onTap: () async {
+              const url = 'https://x.com/JBEXPO1';
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
+            },
+            color: const Color.fromARGB(
+                255, 112, 112, 112), // Dodano żółty kolor dla ikony Google
+          ),
+          _buildIconWithTextButton(
+            context,
+            FontAwesomeIcons.instagram, // Ikona Instagrama z FontAwesome
+            "Instagram",
+            onTap: () async {
+              const url = 'https://www.instagram.com';
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
+            },
+            color: const Color.fromARGB(255, 253, 0, 219), // Kolor Instagrama
+          ),
+
+          _buildIconWithTextButton(
+            context,
+            FontAwesomeIcons.google,
+            "Google",
             onTap: () async {
               const url = 'https://g.co/kgs/9fbbLNN';
               if (await canLaunch(url)) {
                 await launch(url);
               }
             },
+            color: Colors.yellow, // Dodano żółty kolor dla ikony Google
           ),
+
           _buildIconWithTextButton(
             context,
-            Icons.facebook,
+            FontAwesomeIcons.facebook,
             "Facebook",
             onTap: () async {
               const url =
@@ -90,31 +203,10 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                 await launch(url);
               }
             },
-          ),
-          Row(
-            children: [
-              SvgPicture.asset(
-                'packages/country_icons/icons/flags/svg/gb.svg',
-                width: 20,
-                height: 20,
-              ),
-              const SizedBox(width: 4),
-              Switch(
-                value: isPolish,
-                onChanged: toggleLanguage,
-                activeColor: Colors.white,
-                inactiveThumbColor: Colors.white,
-                inactiveTrackColor: Colors.grey,
-              ),
-              SvgPicture.asset(
-                'packages/country_icons/icons/flags/svg/pl.svg',
-                width: 20,
-                height: 20,
-              ),
-              const SizedBox(width: 8),
-            ],
+            color: Colors.blue, // Dodano niebieski kolor dla ikony Facebook
           ),
         ] else ...[
+          // Small screen layout
           PopupMenuButton<int>(
             icon: const Icon(Icons.menu, color: Colors.white),
             shape: RoundedRectangleBorder(
@@ -122,55 +214,51 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
             color: Colors.black.withOpacity(0.9),
             itemBuilder: (context) => [
-              _buildMenuItem(0, isPolish ? "Strona główna" : "Home"),
-              _buildMenuItem(1, isPolish ? "Jak działamy" : "How We Work"),
-              _buildMenuItem(2, isPolish ? "Portfolio" : "Portfolio"),
+              _buildMenuItem(0, isPolish ? "Strona główna" : "Home", Icons.home,
+                  const Color.fromARGB(255, 194, 181, 0)),
+              _buildMenuItem(1, isPolish ? "Jak działamy" : "How We Work",
+                  Icons.work, const Color.fromARGB(255, 194, 181, 0)),
+              _buildMenuItem(2, isPolish ? "Portfolio" : "Portfolio",
+                  Icons.photo_album, const Color.fromARGB(255, 194, 181, 0)),
+              _buildMenuItem(3, isPolish ? "O nas" : "About Us", Icons.info,
+                  const Color.fromARGB(255, 194, 181, 0)),
+              _buildMenuItem(4, isPolish ? "Lokalizacja" : "Location",
+                  Icons.location_on, const Color.fromARGB(255, 194, 181, 0)),
               const PopupMenuDivider(),
-              PopupMenuItem<int>(
-                value: -1,
-                child: Row(
-                  children: [
-                    const Icon(Icons.contact_mail, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      isPolish ? "Kontakt" : "Contact",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: -2,
-                child: Row(
-                  children: [
-                    const Icon(Icons.public, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      isPolish ? "Strona Google" : "Google Page",
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuItem<int>(
-                value: -3,
-                child: Row(
-                  children: [
-                    const Icon(Icons.facebook, color: Colors.blueAccent),
-                    const SizedBox(width: 8),
-                    const Text(
-                      "Facebook",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+              _buildMenuItem(-1, isPolish ? "Kontakt" : "Contact",
+                  FontAwesomeIcons.envelope, Colors.orange),
+              _buildMenuItem(
+                  -2, "Google", FontAwesomeIcons.google, Colors.yellow),
+              _buildMenuItem(
+                  -3, "Facebook", FontAwesomeIcons.facebook, Colors.blue),
+              _buildMenuItem(-5, "Instagram", FontAwesomeIcons.instagram,
+                  const Color.fromARGB(255, 253, 0, 219)),
+              _buildMenuItem(-6, "X", FontAwesomeIcons.xTwitter,
+                  const Color.fromARGB(255, 80, 80, 80)),
             ],
             onSelected: (value) async {
-              if (value == 0 || value == 1 || value == 2) {
+              if (value >= 0) {
                 onNavigate(value);
+              } else if (value == -4) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        CompanyLocationWebPage(isPolish: isPolish),
+                  ),
+                );
               } else if (value == -1) {
-                Navigator.pushNamed(context, '/contact');
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return ContactDialog(
+                      isPolish: isPolish,
+                      borderGradient: const LinearGradient(
+                        colors: [Colors.blueAccent, Colors.redAccent],
+                      ),
+                    );
+                  },
+                );
               } else if (value == -2) {
                 const url = 'https://g.co/kgs/9fbbLNN';
                 if (await canLaunch(url)) {
@@ -182,10 +270,53 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                 if (await canLaunch(url)) {
                   await launch(url);
                 }
+              } else if (value == -5) {
+                const url =
+                    'https://www.instagram.com/jbexpoplus?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              } else if (value == -6) {
+                const url = 'https://x.com/JBEXPO1';
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
               }
             },
           ),
         ],
+        const SizedBox(
+          height: 40,
+          child: VerticalDivider(
+            color: Colors.white,
+            thickness: 1,
+            width: 40,
+          ),
+        ),
+        Row(
+          children: [
+            SvgPicture.asset(
+              'packages/country_icons/icons/flags/svg/gb.svg',
+              width: 15,
+              height: 15,
+            ),
+            const SizedBox(width: 4),
+            Switch(
+              value: isPolish,
+              onChanged: toggleLanguage,
+              activeColor: Colors.white,
+              inactiveThumbColor: Colors.white,
+              inactiveTrackColor: Colors.grey,
+            ),
+            SvgPicture.asset(
+              'packages/country_icons/icons/flags/svg/pl.svg',
+              width: 15,
+              height: 15,
+            ),
+            const SizedBox(width: 8),
+          ],
+        ),
+        const SizedBox(width: 10),
       ],
     );
   }
@@ -194,32 +325,50 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
     BuildContext context,
     int index,
     String label,
-    IconData icon,
+    IconData outlinedIcon,
+    IconData filledIcon,
     bool isHighlighted,
   ) {
+    final bool isSelected = currentIndex == index;
+
     return TextButton(
       onPressed: () {
-        if (currentIndex != index) {
+        if (!isSelected) {
           onNavigate(index);
         }
       },
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: isHighlighted
-                ? const Color.fromARGB(255, 161, 151, 0)
-                : Colors.white,
+          Container(
+            decoration: isSelected
+                ? BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color.fromARGB(255, 161, 151, 0)
+                            .withOpacity(0.4), // Cień w kolorze zaznaczenia
+                        blurRadius: 25,
+                        spreadRadius: 1,
+                        offset: const Offset(10, 3), // Przesunięcie cienia
+                      ),
+                    ],
+                  )
+                : null,
+            child: Icon(
+              isSelected ? filledIcon : outlinedIcon,
+              color: isSelected
+                  ? const Color.fromARGB(255, 161, 151, 0)
+                  : Colors.white,
+            ),
           ),
           const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
               fontSize: 18,
-              color: isHighlighted
+              color: isSelected
                   ? const Color.fromARGB(255, 161, 151, 0)
                   : Colors.white,
-              fontWeight: FontWeight.bold,
+              fontWeight: isSelected ? FontWeight.w500 : FontWeight.w100,
             ),
           ),
         ],
@@ -229,28 +378,55 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildIconWithTextButton(
       BuildContext context, IconData icon, String label,
-      {required VoidCallback onTap}) {
+      {required VoidCallback onTap, required Color color}) {
     return TextButton(
       onPressed: onTap,
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white),
-          const SizedBox(width: 8),
+          Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.4), // Cień w kolorze ikony
+                  blurRadius: 25,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 7), // Przesunięcie cienia
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: color, // Dynamiczny kolor ikony
+              size: 20,
+            ),
+          ),
+          const SizedBox(height: 5), // Odstęp między ikoną a tekstem
           Text(
             label,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+            ),
           ),
         ],
       ),
     );
   }
 
-  PopupMenuItem<int> _buildMenuItem(int value, String label) {
+  PopupMenuItem<int> _buildMenuItem(
+      int value, String label, IconData icon, Color color) {
     return PopupMenuItem<int>(
       value: value,
-      child: Text(
-        label,
-        style: const TextStyle(color: Colors.white),
+      child: Row(
+        children: [
+          Icon(icon, color: color, size: 18), // Ikona z kolorami
+          const SizedBox(width: 10), // Odstęp między ikoną a tekstem
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
       ),
     );
   }

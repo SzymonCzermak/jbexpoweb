@@ -50,6 +50,7 @@ dependencies:
   video_player: ^2.9.2
   flutter_email_sender: ^6.0.3
   provider: ^6.1.2
+  dyn_mouse_scroll: ^1.0.7
 
 dev_dependencies:
   flutter_test:
@@ -82,9 +83,7 @@ flutter:
     - assets/Background.png
     - assets/Background2.png
     - assets/Background3.png
-    - assets/Team/Jakub Bagrowski.png
-    - assets/Team/Magdalena Kostrzewska.png
-    - assets/Team/pigi.png
+    - assets/Team/
     - assets/LogoBlack.svg
     - assets/LogoWhite.svg
     - assets/maps.png
@@ -92,6 +91,8 @@ flutter:
     - assets/LogaTargow/
     - assets/JBExpoPlus_Loga.mp4
     - assets/Work/
+    - assets/Stoiska/
+
 
 
 
