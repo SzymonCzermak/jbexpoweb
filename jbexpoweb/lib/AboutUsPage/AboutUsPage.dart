@@ -20,7 +20,7 @@ class AboutUsPage extends StatelessWidget {
             : "Team Leader, Chief Executive",
         "phone": "+48 123 456 789",
         "email": "jbexpo@jbexpo.pl",
-        "image": "assets/team/JakubBagrowski.png", // Poprawiona ścieżka
+        "image": "assets/JakubBagrowski.png",
       },
       {
         "name": "Joanna Kasprzyk",
@@ -28,21 +28,21 @@ class AboutUsPage extends StatelessWidget {
             isPolish ? "Kierownik Zarządzania" : "Management Supervisor",
         "phone": "+48 786 669 657",
         "email": "jbexpoplus@gmail.com",
-        "image": "assets/team/pigi.png", // Poprawiona ścieżka
+        "image": "assets/team/pigi.png",
       },
       {
         "name": "Magdalena Kostrzewska",
         "position": isPolish ? "Kierownik Logistyki" : "Logistics Manager",
         "phone": "+48 555 666 777",
         "email": "jbexpoplus.biuro@gmail.com",
-        "image": "assets/team/MagdalenaKostrzewska.png", // Poprawiona ścieżka
+        "image": "assets/MagdalenaKostrzewska.png",
       },
       {
         "name": "Zuzanna Sieradzka",
         "position": isPolish ? "Asystent" : "Assistant",
         "phone": "+48 515 367 526",
         "email": "jbexpoplus.office@gmail.com",
-        "image": "assets/team/pigi.png", // Poprawiona ścieżka
+        "image": "assets/team/pigi.png",
       },
     ];
 
@@ -148,83 +148,87 @@ class AboutUsPage extends StatelessWidget {
           itemCount: teamMembers.length,
           itemBuilder: (context, index) {
             final member = teamMembers[index];
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(80),
-                gradient: const LinearGradient(
-                  colors: [
-                    Color.fromARGB(158, 0, 0, 0),
-                    Color.fromARGB(158, 0, 0, 0),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(
-                  color: const Color.fromARGB(255, 194, 181, 0),
-                  width: 2,
-                ),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(60),
-                    child: Image.asset(
-                      member["image"]!,
-                      width: 180,
-                      height: 180,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Image.network(
-                          'https://via.placeholder.com/180',
-                          width: 180,
-                          height: 180,
-                          fit: BoxFit.cover,
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    member["name"]!,
-                    style: GoogleFonts.openSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    member["position"]!,
-                    style: GoogleFonts.openSans(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 10),
-                  _buildContactItem(
-                    context: context,
-                    icon: Icons.phone,
-                    text: member["phone"]!,
-                    color: Colors.green,
-                    isPhone: true,
-                  ),
-                  const SizedBox(height: 5),
-                  _buildContactItem(
-                    context: context,
-                    icon: Icons.email,
-                    text: member["email"]!,
-                    color: Colors.blue,
-                    isCopyable: true,
-                  ),
-                ],
-              ),
-            );
+            return _buildTeamCard(member, context);
           },
         ),
+      ),
+    );
+  }
+
+  Widget _buildTeamCard(Map<String, String> member, BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(80),
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(158, 0, 0, 0),
+            Color.fromARGB(158, 0, 0, 0),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color.fromARGB(255, 194, 181, 0),
+          width: 2,
+        ),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(60),
+            child: Image.asset(
+              member["image"]!,
+              width: 180,
+              height: 180,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.network(
+                  'https://via.placeholder.com/180',
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            member["name"]!,
+            style: GoogleFonts.openSans(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            member["position"]!,
+            style: GoogleFonts.openSans(
+              fontSize: 16,
+              color: Colors.white70,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          _buildContactItem(
+            context: context,
+            icon: Icons.phone,
+            text: member["phone"]!,
+            color: Colors.green,
+            isPhone: true,
+          ),
+          const SizedBox(height: 5),
+          _buildContactItem(
+            context: context,
+            icon: Icons.email,
+            text: member["email"]!,
+            color: Colors.blue,
+            isCopyable: true,
+          ),
+        ],
       ),
     );
   }
