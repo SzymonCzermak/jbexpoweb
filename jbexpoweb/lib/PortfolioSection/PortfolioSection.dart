@@ -1,7 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Import Google Fonts
-import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart'; // Import biblioteki
-import 'package:jbexpoweb/FooterWidget.dart'; // Import stopki
+import 'package:google_fonts/google_fonts.dart';
+import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart';
+import 'package:jbexpoweb/FooterWidget.dart';
 
 class PortfolioPage extends StatefulWidget {
   final bool isPolish;
@@ -13,15 +14,22 @@ class PortfolioPage extends StatefulWidget {
 }
 
 class _PortfolioPageState extends State<PortfolioPage> {
+  final ScrollController _scrollController = ScrollController();
+
   final List<Map<String, String>> _projects = List.generate(
-    21, // Liczba zdjęć: 21
+    21,
     (index) => {
       "imagePath": 'assets/Stoiska/${index + 1}.png',
     },
   );
 
-  final List<bool> _hoverStates =
-      List.generate(21, (_) => false); // Dostosowanie hoverStates
+  final List<bool> _hoverStates = List.generate(21, (_) => false);
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,130 +42,103 @@ class _PortfolioPageState extends State<PortfolioPage> {
             : 3;
 
     return Scaffold(
-      body: DynMouseScroll(
-        builder: (context, controller, physics) => SingleChildScrollView(
-          controller: controller,
-          physics: physics,
+      body: Listener(
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            _handleScroll(pointerSignal);
+          }
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
           child: Stack(
             children: [
-              // Tło - obraz z zasobów
               Positioned.fill(
                 child: Image.asset(
                   'assets/Background3.png',
                   fit: BoxFit.cover,
                 ),
               ),
-              // Zawartość strony
               Column(
                 children: [
                   const SizedBox(height: 60),
-
-                  // Tytuł strony
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      // Ustalanie rozmiaru tekstu na podstawie szerokości
-                      double titleFontSize = constraints.maxWidth > 800
-                          ? 80
-                          : 28; // Rozmiar dla dużych i małych ekranów
-                      double subtitleFontSize = constraints.maxWidth > 800
-                          ? 24
-                          : 16; // Mniejszy tekst dla opisu
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Główny tytuł
-                          Text(
-                            widget.isPolish
-                                ? "Nasze Portfolio"
-                                : "Our Portfolio",
-                            style: GoogleFonts.michroma(
-                              fontSize: titleFontSize,
-                              fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(255, 194, 181, 0),
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(
-                              height: 8), // Odstęp między tytułem a podtytułem
-
-                          // Podtytuł
-                          Text(
-                            widget.isPolish
-                                ? "Odzwierciedla naszą pasję, doświadczenie oraz profesjonalizm"
-                                : "Spaces that shape your brand's image",
-                            style: GoogleFonts.michroma(
-                              fontSize: subtitleFontSize,
-                              fontWeight: FontWeight.normal,
-                              color: Colors.white,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Divider(
-                      color: Color.fromARGB(255, 255, 255, 255), // Kolor kreski
-                      thickness: 2, // Grubość kreski
-                      indent: 50, // Wcięcie od lewej
-                      endIndent: 50, // Wcięcie od prawej
-                    ),
-                  ),
-
-                  // Galeria zdjęć
-                  Align(
-                    alignment: Alignment.center,
-                    child: Container(
-                      constraints: const BoxConstraints(
-                          maxWidth: 1200), // Ograniczenie szerokości
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16.0),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: crossAxisCount,
-                          crossAxisSpacing: 16.0,
-                          mainAxisSpacing: 16.0,
-                          childAspectRatio: 1,
-                        ),
-                        itemCount: _projects.length,
-                        itemBuilder: (context, index) {
-                          return _buildGridItem(
-                            imagePath: _projects[index]['imagePath']!,
-                            isHovered: _hoverStates[index],
-                            onHover: (hovered) {
-                              setState(() {
-                                _hoverStates[index] = hovered;
-                              });
-                            },
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Divider(
-                      color: Color.fromARGB(255, 255, 255, 255), // Kolor kreski
-                      thickness: 2, // Grubość kreski
-                      indent: 50, // Wcięcie od lewej
-                      endIndent: 50, // Wcięcie od prawej
-                    ),
-                  ),
-
+                  _buildPageTitle(),
+                  const DividerWidget(),
+                  _buildGallery(crossAxisCount),
+                  const DividerWidget(),
                   const SizedBox(height: 40),
-
-                  // Stopka
                   const FooterWidget(),
                 ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPageTitle() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double titleFontSize = constraints.maxWidth > 800 ? 80 : 28;
+        double subtitleFontSize = constraints.maxWidth > 800 ? 24 : 16;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              widget.isPolish ? "Nasze Portfolio" : "Our Portfolio",
+              style: GoogleFonts.michroma(
+                fontSize: titleFontSize,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 194, 181, 0),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.isPolish
+                  ? "Odzwierciedla naszą pasję, doświadczenie oraz profesjonalizm"
+                  : "Spaces that shape your brand's image",
+              style: GoogleFonts.michroma(
+                fontSize: subtitleFontSize,
+                fontWeight: FontWeight.normal,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildGallery(int crossAxisCount) {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 16.0,
+            mainAxisSpacing: 16.0,
+            childAspectRatio: 1,
+          ),
+          itemCount: _projects.length,
+          itemBuilder: (context, index) {
+            return _buildGridItem(
+              imagePath: _projects[index]['imagePath']!,
+              isHovered: _hoverStates[index],
+              onHover: (hovered) {
+                setState(() {
+                  _hoverStates[index] = hovered;
+                });
+              },
+            );
+          },
         ),
       ),
     );
@@ -172,11 +153,9 @@ class _PortfolioPageState extends State<PortfolioPage> {
       onEnter: (_) => onHover(true),
       onExit: (_) => onHover(false),
       child: GestureDetector(
-        onTap: () {
-          _showFullScreenImage(imagePath);
-        },
+        onTap: () => _showFullScreenImage(imagePath),
         child: AnimatedScale(
-          scale: isHovered ? 1.05 : 1.0, // Powiększenie przy najechaniu
+          scale: isHovered ? 1.05 : 1.0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
           child: Container(
@@ -247,6 +226,37 @@ class _PortfolioPageState extends State<PortfolioPage> {
           ),
         );
       },
+    );
+  }
+
+  void _handleScroll(PointerScrollEvent pointerSignal) {
+    final double delta = pointerSignal.scrollDelta.dy;
+    bool isTouchpad = delta.abs() < 50;
+    double offsetChange = delta * (isTouchpad ? 0.5 : 1.0);
+
+    double newOffset = _scrollController.offset + offsetChange;
+    newOffset = newOffset.clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    _scrollController.jumpTo(newOffset);
+  }
+}
+
+class DividerWidget extends StatelessWidget {
+  const DividerWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 20.0),
+      child: Divider(
+        color: Color.fromARGB(255, 255, 255, 255),
+        thickness: 2,
+        indent: 50,
+        endIndent: 50,
+      ),
     );
   }
 }
