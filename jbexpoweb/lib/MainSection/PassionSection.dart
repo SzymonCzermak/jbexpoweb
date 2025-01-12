@@ -3,21 +3,23 @@ import 'package:google_fonts/google_fonts.dart';
 
 class PassionSection extends StatefulWidget {
   final bool isPolish;
-  final Color color;
 
   const PassionSection({
     Key? key,
     required this.isPolish,
-    this.color = const Color.fromARGB(255, 216, 216, 216),
   }) : super(key: key);
 
   @override
-  _ServicesSectionState createState() => _ServicesSectionState();
+  _PassionSectionState createState() => _PassionSectionState();
 }
 
-class _ServicesSectionState extends State<PassionSection>
+class _PassionSectionState extends State<PassionSection>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _opacityAnimationHeader;
+  late Animation<Offset> _slideAnimationHeader;
+  late Animation<double> _opacityAnimationText;
+  late Animation<double> _widthAnimation;
   late List<Animation<double>> _cardOpacities;
 
   @override
@@ -25,12 +27,41 @@ class _ServicesSectionState extends State<PassionSection>
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 2500),
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
 
+    _opacityAnimationHeader = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      ),
+    );
+
+    _slideAnimationHeader =
+        Tween<Offset>(begin: const Offset(0, -1.0), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+      ),
+    );
+
+    _opacityAnimationText = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    _widthAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.80, 1.0, curve: Curves.easeInOut),
+      ),
+    );
+
     _cardOpacities = List.generate(6, (index) {
-      final startInterval = 0.2 + (index * 0.1);
+      final startInterval = 0.4 + (index * 0.1);
       return Tween<double>(begin: 0.0, end: 1.0).animate(
         CurvedAnimation(
           parent: _controller,
@@ -65,73 +96,77 @@ class _ServicesSectionState extends State<PassionSection>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FadeTransition(
-              opacity: _controller,
-              child: Column(
-                children: [
-                  Text(
-                    widget.isPolish
-                        ? 'Pasja do tworzenia przestrzeni'
-                        : 'A passion for creating spaces',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.michroma(
-                      fontSize: isSmallScreen ? 36.0 : 80.0,
-                      fontWeight: FontWeight.bold,
-                      color: widget.color,
-                    ),
+            SlideTransition(
+              position: _slideAnimationHeader,
+              child: FadeTransition(
+                opacity: _opacityAnimationHeader,
+                child: Text(
+                  widget.isPolish
+                      ? 'Pasja do tworzenia przestrzeni'
+                      : 'A passion for creating spaces',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.michroma(
+                    fontSize: isSmallScreen ? 36.0 : 80.0,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromARGB(255, 216, 216, 216),
                   ),
-                  const SizedBox(height: 12),
-                  RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: widget.isPolish
-                              ? 'Nasz kompleksowy pakiet usług '
-                              : 'Our comprehensive suite of professional services ',
-                          style: GoogleFonts.michroma(
-                            fontSize: isSmallScreen ? 14.0 : 18.0,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            color: widget.color,
-                          ),
-                        ),
-                        TextSpan(
-                          text: widget.isPolish
-                              ? 'skierowany jest do szerokiej gamy klientów, '
-                              : 'caters to a diverse clientele, ',
-                          style: GoogleFonts.michroma(
-                            fontSize: isSmallScreen ? 14.0 : 18.0,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            color: const Color.fromARGB(255, 161, 151, 0),
-                          ),
-                        ),
-                        TextSpan(
-                          text: widget.isPolish
-                              ? 'od właścicieli domów po deweloperów komercyjnych.'
-                              : 'ranging from homeowners to commercial developers.',
-                          style: GoogleFonts.michroma(
-                            fontSize: isSmallScreen ? 14.0 : 18.0,
-                            fontWeight: FontWeight.w400,
-                            height: 1.5,
-                            color: widget.color,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                    child: Divider(
-                      color: Color.fromARGB(255, 255, 255, 255),
-                      thickness: 2,
-                      indent: 50,
-                      endIndent: 50,
-                    ),
-                  ),
-                ],
+                ),
               ),
+            ),
+            const SizedBox(height: 12),
+            FadeTransition(
+              opacity: _opacityAnimationText,
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'Nasz kompleksowy pakiet usług '
+                          : 'Our comprehensive suite of professional services ',
+                      style: GoogleFonts.michroma(
+                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: const Color.fromARGB(255, 216, 216, 216),
+                      ),
+                    ),
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'skierowany jest do szerokiej gamy klientów, '
+                          : 'caters to a diverse clientele, ',
+                      style: GoogleFonts.michroma(
+                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: const Color.fromARGB(255, 161, 151, 0),
+                      ),
+                    ),
+                    TextSpan(
+                      text: widget.isPolish
+                          ? 'od właścicieli domów po deweloperów komercyjnych.'
+                          : 'ranging from homeowners to commercial developers.',
+                      style: GoogleFonts.michroma(
+                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontWeight: FontWeight.w400,
+                        height: 1.5,
+                        color: const Color.fromARGB(255, 216, 216, 216),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            AnimatedBuilder(
+              animation: _widthAnimation,
+              builder: (context, child) {
+                return Container(
+                  width: _widthAnimation.value * screenWidth * 0.8,
+                  height: 2,
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                );
+              },
             ),
             const SizedBox(height: 20),
             LayoutBuilder(
@@ -152,7 +187,6 @@ class _ServicesSectionState extends State<PassionSection>
                           child: _AnimatedServiceCard(
                             title: _getTitle(i),
                             description: _getDescription(i),
-                            color: widget.color,
                             iconSize: iconSize,
                           ),
                         ),
@@ -211,88 +245,99 @@ class _ServicesSectionState extends State<PassionSection>
 class _AnimatedServiceCard extends StatefulWidget {
   final String title;
   final String description;
-  final Color color;
   final double iconSize;
 
   const _AnimatedServiceCard({
     Key? key,
     required this.title,
     required this.description,
-    required this.color,
     required this.iconSize,
   }) : super(key: key);
 
   @override
-  State<_AnimatedServiceCard> createState() => _AnimatedServiceCardState();
+  __AnimatedServiceCardState createState() => __AnimatedServiceCardState();
 }
 
-class _AnimatedServiceCardState extends State<_AnimatedServiceCard> {
-  bool isHovered = false;
+class __AnimatedServiceCardState extends State<_AnimatedServiceCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<Color?> _colorAnimation;
 
-  void _onHover(bool hovering) {
-    setState(() {
-      isHovered = hovering;
-    });
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _colorAnimation = ColorTween(
+      begin: const Color.fromARGB(255, 216, 216, 216),
+      end: const Color.fromARGB(255, 255, 215, 0),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isMobile =
-        screenWidth < 600; // Ekrany o szerokości poniżej 600px
-
-    final double iconSize = isMobile ? widget.iconSize * 0.6 : widget.iconSize;
-    final double titleFontSize = isMobile ? 12.0 : 16.0;
-    final double descriptionFontSize = isMobile ? 8.0 : 12.0;
-
-    return GestureDetector(
-      onTap: () => _onHover(!isHovered),
-      child: MouseRegion(
-        onEnter: (_) => _onHover(true),
-        onExit: (_) => _onHover(false),
-        child: AnimatedScale(
-          scale: isHovered ? 1.1 : 1.0,
-          duration: const Duration(milliseconds: 150),
+    return MouseRegion(
+      onEnter: (_) => _controller.forward(),
+      onExit: (_) => _controller.reverse(),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.star,
-                size: iconSize,
-                color: isHovered
-                    ? const Color.fromARGB(255, 194, 181, 0)
-                    : widget.color,
+              AnimatedBuilder(
+                animation: _colorAnimation,
+                builder: (context, child) {
+                  return Icon(
+                    Icons.star,
+                    size: widget.iconSize,
+                    color: _colorAnimation.value,
+                  );
+                },
               ),
-              const SizedBox(
-                  height: 8), // Mniejszy odstęp dla mniejszych ekranów
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
+              const SizedBox(height: 8),
+              Text(
+                widget.title,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.michroma(
-                  fontSize: titleFontSize,
-                  fontWeight: isHovered ? FontWeight.bold : FontWeight.w500,
-                  color: isHovered
-                      ? const Color.fromARGB(255, 194, 181, 0)
-                      : widget.color,
-                ),
-                child: Text(
-                  widget.title,
-                  textAlign: TextAlign.center,
+                  fontSize: 16.0,
+                  fontWeight: FontWeight.bold,
+                  color: const Color.fromARGB(255, 216, 216, 216),
                 ),
               ),
-              const SizedBox(height: 6), // Mniejszy odstęp dla opisu
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
+              const SizedBox(height: 8),
+              Text(
+                widget.description,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.michroma(
-                  fontSize: descriptionFontSize,
+                  fontSize: 12.0,
                   fontWeight: FontWeight.w400,
-                  color: isHovered
-                      ? const Color.fromARGB(255, 194, 181, 0)
-                      : widget.color,
-                  height: 1.3,
-                ),
-                child: Text(
-                  widget.description,
-                  textAlign: TextAlign.center,
+                  color: const Color.fromARGB(255, 216, 216, 216),
                 ),
               ),
             ],

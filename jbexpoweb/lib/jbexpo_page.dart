@@ -2,6 +2,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:jbexpoweb/MainSection/EndSection.dart';
 import 'package:jbexpoweb/MainSection/PartnerSection.dart';
+import 'package:jbexpoweb/MainSection/S1Section.dart';
+import 'package:jbexpoweb/MainSection/WelcomeSection.dart';
 import 'package:jbexpoweb/MainSection/VideoSection.dart';
 import 'package:jbexpoweb/MainSection/PortfolioSec.dart';
 import 'package:jbexpoweb/MainSection/PassionSection.dart';
@@ -86,21 +88,25 @@ class _JBExpoPageState extends State<JBExpoPage> {
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
-              itemCount: 5, // Liczba sekcji
+              itemCount: 7, // Liczba sekcji
               itemBuilder: (context, index) {
                 switch (index) {
-                  case 0:
-                    return const VideoSection();
-                  case 1:
-                    return PassionSection(isPolish: widget.isPolish);
-                  case 2:
-                    return PartnerSection(isPolish: widget.isPolish);
                   case 3:
+                    return const VideoSection();
+                  case 4:
+                    return S1Section(isPolish: widget.isPolish);
+                  case 1:
+                    return WelcomeSection(isPolish: widget.isPolish);
+                  case 2:
+                    return PassionSection(isPolish: widget.isPolish);
+                  case 0:
+                    return PartnerSection(isPolish: widget.isPolish);
+                  case 5:
                     return PortfolioSec(
                       isPolish: widget.isPolish,
                       onNavigate: widget.onNavigate, // Przekazanie onNavigate
                     );
-                  case 4:
+                  case 6:
                     return EndSection(
                       isPolish: widget.isPolish,
                     ); // Zamiana FooterWidget na EndSection

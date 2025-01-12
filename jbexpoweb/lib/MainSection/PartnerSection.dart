@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:jbexpoweb/button_style.dart';
 
 class PartnerSection extends StatefulWidget {
   final bool isPolish;
@@ -11,22 +12,74 @@ class PartnerSection extends StatefulWidget {
   _PartnerSectionState createState() => _PartnerSectionState();
 }
 
-class _PartnerSectionState extends State<PartnerSection> {
+class _PartnerSectionState extends State<PartnerSection>
+    with SingleTickerProviderStateMixin {
   final ScrollController _scrollControllerTop = ScrollController();
   late Timer _topTimer;
   int _scrollSpeed = 100; // Prędkość przewijania w milisekundach
   bool _isScrolling = true; // Flaga dla stanu przewijania
 
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimationHeader;
+  late Animation<Offset> _slideAnimationHeader;
+  late Animation<double> _opacityAnimationText;
+  late Animation<double> _widthAnimation;
+  late Animation<double> _opacityAnimationLogos;
+
   @override
   void initState() {
     super.initState();
     _startAutoScroll();
+
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 3000),
+      vsync: this,
+    );
+
+    _opacityAnimationHeader = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
+      ),
+    );
+
+    _slideAnimationHeader =
+        Tween<Offset>(begin: const Offset(0, -1.0), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+      ),
+    );
+
+    _opacityAnimationText = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    _widthAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.80, 1.0, curve: Curves.easeInOut),
+      ),
+    );
+
+    _opacityAnimationLogos = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeIn),
+      ),
+    );
+
+    _controller.forward();
   }
 
   @override
   void dispose() {
     _topTimer.cancel();
     _scrollControllerTop.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -97,105 +150,119 @@ class _PartnerSectionState extends State<PartnerSection> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(height: 20),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: GoogleFonts.michroma(
-                      fontSize: titleFontSize,
-                      color: const Color.fromARGB(255, 216, 216, 216),
-                      fontWeight: FontWeight.bold,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: widget.isPolish
-                            ? "Nasza obecność na "
-                            : "Our presence at ",
-                      ),
-                      TextSpan(
-                        text: widget.isPolish
-                            ? "europejskich targach"
-                            : "European trade fairs",
+                SlideTransition(
+                  position: _slideAnimationHeader,
+                  child: FadeTransition(
+                    opacity: _opacityAnimationHeader,
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
                         style: GoogleFonts.michroma(
-                          color: const Color.fromARGB(255, 161, 151, 0),
+                          fontSize: titleFontSize,
+                          color: const Color.fromARGB(255, 216, 216, 216),
                           fontWeight: FontWeight.bold,
                         ),
+                        children: [
+                          TextSpan(
+                            text: widget.isPolish
+                                ? "Nasza obecność na "
+                                : "Our presence at ",
+                          ),
+                          TextSpan(
+                            text: widget.isPolish
+                                ? "europejskich targach"
+                                : "European trade fairs",
+                            style: GoogleFonts.michroma(
+                              color: const Color.fromARGB(255, 161, 151, 0),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: GoogleFonts.michroma(
-                      fontSize: subtitleFontSize,
-                      color: const Color.fromARGB(255, 216, 216, 216),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: widget.isPolish
-                            ? "gdzie nasze stoiska zachwycały jakością i nowoczesnym designem."
-                            : "where our booths impressed with quality and modern design.",
+                FadeTransition(
+                  opacity: _opacityAnimationText,
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      style: GoogleFonts.michroma(
+                        fontSize: subtitleFontSize,
+                        color: const Color.fromARGB(255, 216, 216, 216),
                       ),
-                    ],
+                      children: [
+                        TextSpan(
+                          text: widget.isPolish
+                              ? "gdzie nasze stoiska zachwycały jakością i nowoczesnym designem."
+                              : "where our booths impressed with quality and modern design.",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: Divider(
-                    color: Color.fromARGB(255, 255, 255, 255), // Kolor kreski
-                    thickness: 2, // Grubość kreski
-                    indent: 50, // Wcięcie od lewej
-                    endIndent: 50, // Wcięcie od prawej
-                  ),
+                const SizedBox(height: 10),
+                AnimatedBuilder(
+                  animation: _widthAnimation,
+                  builder: (context, child) {
+                    return Container(
+                      width: _widthAnimation.value * screenWidth * 0.8,
+                      height: 2,
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    );
+                  },
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          Stack(
-            children: [
-              Container(
-                height: logoHeight,
-                child: ListView.builder(
-                  controller: _scrollControllerTop,
-                  scrollDirection: Axis.horizontal,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: 42,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Container(
-                        width: logoWidth,
-                        height: logoHeight,
-                        child: Image.asset(
-                          'assets/LogaTargow/${(index % 42) + 1}.png',
-                          fit: BoxFit.contain,
+          FadeTransition(
+            opacity: _opacityAnimationLogos,
+            child: Stack(
+              children: [
+                Container(
+                  height: logoHeight,
+                  child: ListView.builder(
+                    controller: _scrollControllerTop,
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: 42,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Container(
+                          width: logoWidth,
+                          height: logoHeight,
+                          child: Image.asset(
+                            'assets/LogaTargow/${(index % 42) + 1}.png',
+                            fit: BoxFit.contain,
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-              Positioned(
-                left: 0,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: 8, // Grubość kreski
-                  color: const Color.fromARGB(255, 161, 151, 0),
+                Positioned(
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 8, // Grubość kreski
+                    color: const Color.fromARGB(255, 161, 151, 0),
+                  ),
                 ),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                bottom: 0,
-                child: Container(
-                  width: 8, // Grubość kreski
-                  color: const Color.fromARGB(255, 161, 151, 0),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 8, // Grubość kreski
+                    color: const Color.fromARGB(255, 161, 151, 0),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -247,26 +314,14 @@ class _PartnerSectionState extends State<PartnerSection> {
       width: buttonWidth,
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
-          backgroundColor: const Color.fromARGB(96, 94, 94, 94),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-            side: const BorderSide(
-              color: Color.fromARGB(255, 194, 181, 0),
-              width: 1.0,
-            ),
-          ),
-          elevation: 10,
-          shadowColor: const Color.fromARGB(255, 121, 113, 0).withOpacity(0.4),
-        ),
+        style: ButtonStyles.elevatedButtonStyle,
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             label,
             style: GoogleFonts.michroma(
               fontSize: fontSize,
-              fontWeight: FontWeight.w400,
+              fontWeight: FontWeight.w900,
               color: Colors.white,
             ),
           ),
