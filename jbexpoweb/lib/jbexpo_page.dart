@@ -91,7 +91,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
               itemCount: 7, // Liczba sekcji
               itemBuilder: (context, index) {
                 switch (index) {
-                  case 3:
+                  case 0:
                     return const VideoSection();
                   case 4:
                     return S1Section(isPolish: widget.isPolish);
@@ -99,7 +99,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
                     return WelcomeSection(isPolish: widget.isPolish);
                   case 2:
                     return PassionSection(isPolish: widget.isPolish);
-                  case 0:
+                  case 3:
                     return PartnerSection(isPolish: widget.isPolish);
                   case 5:
                     return PortfolioSec(
