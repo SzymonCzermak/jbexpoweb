@@ -67,7 +67,7 @@ class _AboutUsPageState extends State<AboutUsPage>
         "position": widget.isPolish
             ? "Kierownik Zespołu, Szef"
             : "Team Leader, Chief Executive",
-        "phone": "+48 123 456 789",
+        "phone": "+48 51 5000 868",
         "email": "jbexpo@jbexpo.pl",
         "image": "assets/JakubBagrowski.png",
       },
@@ -83,16 +83,9 @@ class _AboutUsPageState extends State<AboutUsPage>
         "name": "Magdalena Kostrzewska",
         "position":
             widget.isPolish ? "Kierownik Logistyki" : "Logistics Manager",
-        "phone": "+48 555 666 777",
+        "phone": "+48 695 422 216",
         "email": "jbexpoplus.biuro@gmail.com",
         "image": "assets/MagdalenaKostrzewska.png",
-      },
-      {
-        "name": "Zuzanna Sieradzka",
-        "position": widget.isPolish ? "Asystent" : "Assistant",
-        "phone": "+48 515 367 526",
-        "email": "jbexpoplus.office@gmail.com",
-        "image": "assets/pigi.png",
       },
     ];
 

@@ -51,6 +51,7 @@ dependencies:
   flutter_email_sender: ^6.0.3
   provider: ^6.1.2
   dyn_mouse_scroll: ^1.0.7
+  youtube_player_iframe: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -97,6 +98,8 @@ flutter:
     - assets/MagdalenaKostrzewska.png
     - assets/pigi.png
     - assets/jbexpo/
+    - assets/placehvideo.png
+
 
 
 

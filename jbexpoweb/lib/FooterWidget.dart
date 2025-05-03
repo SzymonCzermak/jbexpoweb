@@ -179,17 +179,18 @@ class FooterWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'X',
+                'WhatsApp',
                 style: TextStyle(color: Colors.grey[400], fontSize: 12),
               ),
               const SizedBox(width: 8),
               _buildSocialIcon(
-                icon: FontAwesomeIcons.xTwitter,
-                color: const Color.fromARGB(255, 90, 90, 90),
-                url: 'https://x.com/JBEXPO1',
+                icon: FontAwesomeIcons.whatsapp,
+                color: const Color.fromARGB(255, 37, 211, 102),
+                url: 'https://wa.me/515000868',
               ),
             ],
           ),
+
           const SizedBox(width: 34), // Odstęp między Twitterem a Google
           Row(
             children: [

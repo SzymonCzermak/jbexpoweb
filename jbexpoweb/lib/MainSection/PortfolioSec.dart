@@ -18,54 +18,101 @@ class PortfolioSec extends StatefulWidget {
   _PortfolioSecState createState() => _PortfolioSecState();
 }
 
-class _PortfolioSecState extends State<PortfolioSec> {
+class _PortfolioSecState extends State<PortfolioSec>
+    with SingleTickerProviderStateMixin {
   final Random _random = Random();
-  List<int> _imageIndexes = [1, 2, 3, 4];
+  List<int> _imageIndexes = [];
   int _currentChangingIndex = 0;
   late Timer _timer;
+
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
+
+    _imageIndexes = _generateUniqueIndexes();
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       setState(() {
-        _imageIndexes[_currentChangingIndex] = _random.nextInt(21) + 1;
+        _imageIndexes[_currentChangingIndex] = _generateNewUniqueIndex();
         _currentChangingIndex = (_currentChangingIndex + 1) % 4;
       });
     });
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4500),
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
+
+    _animationController.forward();
+  }
+
+  List<int> _generateUniqueIndexes() {
+    List<int> availableIndexes = List.generate(21, (index) => index + 1);
+    availableIndexes.shuffle();
+    return availableIndexes.take(4).toList();
+  }
+
+  int _generateNewUniqueIndex() {
+    List<int> availableIndexes = List.generate(21, (index) => index + 1)
+      ..removeWhere((index) => _imageIndexes.contains(index));
+    if (availableIndexes.isEmpty) {
+      return _random.nextInt(21) + 1;
+    }
+    availableIndexes.shuffle();
+    return availableIndexes.first;
   }
 
   void _changeImages() {
     setState(() {
-      _imageIndexes = List.generate(4, (index) => _random.nextInt(21) + 1);
+      _imageIndexes = _generateUniqueIndexes();
     });
   }
 
   @override
   void dispose() {
     _timer.cancel();
+    _animationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final double containerSize =
-        screenWidth < 400 ? screenWidth * 0.9 : screenWidth * 0.39;
+    final double containerSize = screenWidth < 600
+        ? screenWidth * 0.70 // na telefonie obrazek prawie pełny ekran
+        : screenWidth * 0.39;
+
     final bool isMobile = screenWidth < 800;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          if (isMobile)
-            _buildMobileLayout(containerSize)
-          else
-            _buildDesktopLayout(containerSize),
-          const SizedBox(height: 20),
-        ],
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (isMobile)
+                _buildMobileLayout(containerSize)
+              else
+                _buildDesktopLayout(containerSize),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -99,6 +146,8 @@ class _PortfolioSecState extends State<PortfolioSec> {
   }
 
   Widget _buildMobileLayout(double containerSize) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -108,7 +157,7 @@ class _PortfolioSecState extends State<PortfolioSec> {
         _buildMiddleSection(),
         _buildImageGrid(containerSize),
         const SizedBox(height: 20),
-        _buildDescription(fontSize: 16),
+        _buildDescription(fontSize: screenWidth < 600 ? 12 : 16),
         const SizedBox(height: 16),
         _buildResponsiveButton(
           label: widget.isPolish

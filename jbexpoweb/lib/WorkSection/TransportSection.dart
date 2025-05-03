@@ -1,7 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart'; // Import biblioteki
-import 'package:jbexpoweb/FooterWidget.dart'; // Import stopki
+import 'package:jbexpoweb/FooterWidget.dart';
 
 class HowWeWorkPage extends StatefulWidget {
   final bool isPolish;
@@ -13,231 +13,193 @@ class HowWeWorkPage extends StatefulWidget {
 }
 
 class _HowWeWorkPageState extends State<HowWeWorkPage>
-    with SingleTickerProviderStateMixin {
-  late bool isPolish;
-  late AnimationController _controller;
-  late List<Animation<double>> _opacityAnimations;
+    with TickerProviderStateMixin {
+  final ScrollController _scrollController = ScrollController();
+  late AnimationController _pageController;
+  late Animation<double> _pageAnimation;
+  late List<AnimationController> _sectionControllers;
+  late List<Animation<double>> _sectionAnimations;
 
   @override
   void initState() {
     super.initState();
-    isPolish = widget.isPolish; // Inicjalizacja języka
-    _controller = AnimationController(
-      duration: const Duration(seconds: 5),
+
+    _pageController = AnimationController(
+      duration: const Duration(seconds: 3),
       vsync: this,
     );
 
-    _opacityAnimations = List.generate(
-      7, // Tylko 7 sekcji (bez przycisku na końcu)
-      (index) => Tween<double>(begin: 0, end: 1).animate(
-        CurvedAnimation(
-          parent: _controller,
-          curve: Interval(
-            index / 7,
-            (index + 1) / 7,
-            curve: Curves.easeOutQuart,
-          ),
-        ),
-      ),
+    _pageAnimation = CurvedAnimation(
+      parent: _pageController,
+      curve: Curves.easeOutExpo,
     );
 
-    _controller.forward();
-  }
+    _sectionControllers = List.generate(
+        7,
+        (index) => AnimationController(
+              duration: Duration(milliseconds: 2500),
+              vsync: this,
+            ));
 
-  @override
-  void didUpdateWidget(covariant HowWeWorkPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.isPolish != widget.isPolish) {
-      setState(() {
-        isPolish = widget.isPolish;
-      });
-    }
+    _sectionAnimations = _sectionControllers
+        .map((controller) => CurvedAnimation(
+              parent: controller,
+              curve: Curves.easeOutExpo,
+            ))
+        .toList();
+
+    _pageController.forward().then((_) async {
+      for (var controller in _sectionControllers) {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        controller.forward();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _pageController.dispose();
+    for (var controller in _sectionControllers) {
+      controller.dispose();
+    }
+    _scrollController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: DynMouseScroll(
-        builder: (context, controller, physics) {
-          return SingleChildScrollView(
-            controller: controller,
-            physics: physics,
-            child: Stack(
-              children: [
-                // Tło
-                Positioned.fill(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/Background3.png'),
-                        fit: BoxFit.cover,
-                      ),
+      backgroundColor: Colors.black,
+      body: Listener(
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            _handleScroll(pointerSignal);
+          }
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/Background3.png'),
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                // Główna zawartość
-                Column(
+              ),
+              ScaleTransition(
+                scale: _pageAnimation,
+                child: FadeTransition(
+                  opacity: _pageAnimation,
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 60),
+                      _buildHeader(),
+                      _buildSections(),
+                      const SizedBox(height: 40),
+                      const FooterWidget(),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          widget.isPolish ? "Sposób naszej pracy" : "How We Work",
+          style: GoogleFonts.michroma(
+            fontSize: MediaQuery.of(context).size.width > 800 ? 80 : 36,
+            fontWeight: FontWeight.bold,
+            color: const Color.fromARGB(255, 194, 181, 0),
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          widget.isPolish
+              ? "Zobacz, jak realizujemy Twoje targowe marzenia"
+              : "See how we make your trade show dreams come true",
+          style: GoogleFonts.michroma(
+            fontSize: MediaQuery.of(context).size.width > 800 ? 24 : 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 20.0),
+          child: Divider(
+            color: Colors.white,
+            thickness: 2,
+            indent: 50,
+            endIndent: 50,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSections() {
+    return Align(
+      alignment: Alignment.center,
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: Column(
+          children: List.generate(7, (index) {
+            return FadeTransition(
+              opacity: _sectionAnimations[index],
+              child: ScaleTransition(
+                scale: _sectionAnimations[index],
+                child: Column(
                   children: [
-                    const SizedBox(height: 60),
-
-                    // Nagłówek na górze strony
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          isPolish ? "Sposób naszej pracy" : "How We Work",
-                          style: GoogleFonts.michroma(
-                            fontSize: MediaQuery.of(context).size.width > 800
-                                ? 80
-                                : 36, // Duży rozmiar dla szerokich ekranów
-                            fontWeight: FontWeight.bold,
-                            color: const Color.fromARGB(255, 194, 181, 0),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(
-                            height: 8), // Odstęp między tytułem a opisem
-                        Text(
-                          isPolish
-                              ? "Zobacz, jak realizujemy Twoje targowe marzenia"
-                              : "See how we make your trade show dreams come true",
-                          style: GoogleFonts.michroma(
-                            fontSize: MediaQuery.of(context).size.width > 800
-                                ? 24
-                                : 16, // Mniejszy rozmiar tekstu
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 20.0),
-                          child: Divider(
-                            color: Color.fromARGB(
-                                255, 255, 255, 255), // Kolor kreski
-                            thickness: 2, // Grubość kreski
-                            indent: 50, // Wcięcie od lewej
-                            endIndent: 50, // Wcięcie od prawej
-                          ),
-                        ), // Odstęp przed sekcjami
-                      ],
+                    _buildResponsiveSection(
+                      number: index + 1,
+                      title: _getTitle(index + 1),
+                      description: _getDescription(index + 1),
+                      imagePath: _getImagePath(index + 1),
                     ),
-
-                    // Sekcje wyświetlane z animacjami
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        constraints: const BoxConstraints(maxWidth: 1200),
-                        child: Column(
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: 7, // Tylko 7 elementów
-                              itemBuilder: (context, index) {
-                                return FadeTransition(
-                                  opacity: _opacityAnimations[index],
-                                  child: Column(
-                                    children: [
-                                      _buildResponsiveSection(
-                                        number: index + 1,
-                                        title: _getTitle(index + 1),
-                                        description: _getDescription(index + 1),
-                                        imagePath: _getImagePath(index + 1),
-                                      ),
-                                      if (index < 6)
-                                        _buildArrowBetweenSections(),
-                                    ],
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 40), // Odstęp przed stopką
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    // Dodana stopka
-                    const FooterWidget(),
+                    if (index < 6) _buildArrowBetweenSections(),
                   ],
                 ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
 
   Widget _buildArrowBetweenSections() {
-    return Icon(
+    return const Icon(
       Icons.arrow_downward,
       size: 50,
-      color: const Color.fromARGB(255, 194, 181, 0),
+      color: Color.fromARGB(255, 194, 181, 0),
     );
   }
 
-  String _getTitle(int number) {
-    switch (number) {
-      case 1:
-        return isPolish ? "Rozmowa to podstawa" : "Conversation is the Key";
-      case 2:
-        return isPolish ? "Podział obowiązków" : "Task Allocation";
-      case 3:
-        return isPolish ? "Transport" : "Transport";
-      case 4:
-        return isPolish ? "Montaż" : "Assembly";
-      case 5:
-        return isPolish ? "Magazyn" : "Storage";
-      case 6:
-        return isPolish ? "Demontaż" : "Disassembly";
-      case 7:
-        return isPolish ? "Uśmiech klienta" : "Client's Smile";
-      default:
-        return "";
-    }
-  }
+  void _handleScroll(PointerScrollEvent pointerSignal) {
+    final double delta = pointerSignal.scrollDelta.dy;
+    bool isTouchpad = delta.abs() < 50;
+    double offsetChange = delta * (isTouchpad ? 0.5 : 1.0);
 
-  String _getDescription(int number) {
-    switch (number) {
-      case 1:
-        return isPolish
-            ? "Każdy projekt zaczyna się od rozmowy. Uważnie słuchamy Twoich potrzeb i celów, aby stworzyć idealny projekt. Nasz zespół biurowy dba o to, aby informacje trafiały dokładnie do kierownika stolarki, co pozwala na realizację projektu zgodnie z założeniami."
-            : "Every project starts with a conversation. We carefully listen to your needs and goals to create the perfect design. Our office team ensures that information is accurately conveyed to the workshop manager, enabling smooth project execution.";
-      case 2:
-        return isPolish
-            ? "Kierownik stolarnii rozdziela zadania pomiędzy członków zespołu, zapewniając płynność działań. Pracownicy realizują swoje obowiązki z najwyższą precyzją, korzystając z nowoczesnego sprzętu, w tym maszyn CNC."
-            : "The workshop manager assigns tasks among team members, ensuring smooth operations. Workers perform their duties with the utmost precision, using modern equipment, including CNC machines.";
-      case 3:
-        return isPolish
-            ? "Organizacja transportu to jedna z naszych mocnych stron. Dbamy o to, aby załadunek tirów przebiegał szybko i dokładnie, a towary były odpowiednio zapakowane i zabezpieczone na czas transportu."
-            : "Transport organization is one of our strong points. We ensure quick and precise truck loading, with goods properly packed and secured for transport.";
-      case 4:
-        return isPolish
-            ? "Nasz zespół montażowy działa na miejscu wydarzenia targowego, z pełnym zaangażowaniem i pasją montując stoisko, które spełnia wszystkie oczekiwania klienta."
-            : "Our assembly team works on-site at trade events, assembling booths with full commitment and passion to meet all client expectations.";
-      case 5:
-        return isPolish
-            ? "Po zakończeniu montażu, elementy stoiska są magazynowane w odpowiednich warunkach. Dbamy o porządek i zgodność z normami ekologicznymi, co pozwala na ponowne ich wykorzystanie w przyszłości."
-            : "After assembly, booth components are stored in appropriate conditions. We ensure cleanliness and compliance with ecological standards, enabling their reuse in the future.";
-      case 6:
-        return isPolish
-            ? "Po zakończeniu wydarzenia nasz zespół przystępuje do demontażu. Wszystkie prace są prowadzone z najwyższą starannością, pozostawiając miejsce w nienagannym stanie."
-            : "After the event, our team begins disassembly. All work is carried out with the utmost care, leaving the site in impeccable condition.";
-      case 7:
-        return isPolish
-            ? "Najlepszym podsumowaniem naszej pracy jest uśmiech zadowolonego klienta oraz ciepłe słowa uznania. To dla nas najcenniejsza nagroda, która motywuje nas do dalszego działania."
-            : "The best summary of our work is the smile of a satisfied client and warm words of appreciation. This is our most valuable reward, motivating us to keep moving forward.";
-      default:
-        return "";
-    }
+    double newOffset = _scrollController.offset + offsetChange;
+    newOffset = newOffset.clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    _scrollController.jumpTo(newOffset);
   }
 
   Widget _buildResponsiveSection({
@@ -300,24 +262,73 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
     );
   }
 
-  String _getImagePath(int number) {
+  String _getTitle(int number) {
     switch (number) {
       case 1:
-        return 'assets/Work/Rozmowa.png';
+        return widget.isPolish
+            ? "Rozmowa to podstawa"
+            : "Conversation is the Key";
       case 2:
-        return 'assets/Work/Podzial.png';
+        return widget.isPolish ? "Podział obowiązków" : "Task Allocation";
       case 3:
-        return 'assets/Work/Transport.png';
+        return widget.isPolish ? "Transport" : "Transport";
       case 4:
-        return 'assets/Work/Montaz.png';
+        return widget.isPolish ? "Montaż" : "Assembly";
       case 5:
-        return 'assets/Work/Magazyn.png';
+        return widget.isPolish ? "Magazyn" : "Storage";
       case 6:
-        return 'assets/Work/Demontaz.png';
+        return widget.isPolish ? "Demontaż" : "Disassembly";
       case 7:
-        return 'assets/Work/Usmiech.png';
+        return widget.isPolish ? "Uśmiech klienta" : "Client's Smile";
       default:
-        return 'assets/default.png';
+        return "";
     }
+  }
+
+  String _getDescription(int number) {
+    switch (number) {
+      case 1:
+        return widget.isPolish
+            ? "Każdy projekt zaczyna się od rozmowy. Uważnie słuchamy Twoich potrzeb i celów, aby stworzyć idealny projekt. Nasz zespół biurowy dba o to, aby informacje trafiały dokładnie do kierownika stolarni, co pozwala na realizację projektu zgodnie z założeniami."
+            : "We listen carefully to your needs to create the perfect design. Our team from theoffice relays the information to the carpentry shop manager. This ensures that weexecute the project as intended.";
+      case 2:
+        return widget.isPolish
+            ? "Kierownik stolarni rozdziela zadania pomiędzy członków zespołu, zapewniając płynność działań. Pracownicy realizują swoje obowiązki z najwyższą precyzją, korzystając z nowoczesnego sprzętu, w tym maszyn CNC."
+            : "The workshop manager assigns tasks among team members, ensuring smooth operations. Workers perform their duties with the utmost precision, using modern equipment, including CNC machines.";
+      case 3:
+        return widget.isPolish
+            ? "Organizacja transportu to jedna z naszych mocnych stron. Dbamy o to, aby załadunek tirów przebiegał szybko i dokładnie, a towary były odpowiednio zapakowane i zabezpieczone na czas transportu."
+            : "Transport organization is one of our strong points. We ensure quick and precise truck loading, with goods properly packed and secured for transport.";
+      case 4:
+        return widget.isPolish
+            ? "Nasz zespół montażowy działa na miejscu wydarzenia targowego, z pełnym zaangażowaniem i pasją montując stoisko, które spełnia wszystkie oczekiwania klienta."
+            : "Our assembly team works on-site at trade events, assembling booths with full commitment and passion to meet all client expectations.";
+      case 5:
+        return widget.isPolish
+            ? "Po zakończeniu montażu, elementy stoiska są magazynowane w odpowiednich warunkach. Dbamy o porządek i zgodność z normami ekologicznymi, co pozwala na ponowne ich wykorzystanie w przyszłości."
+            : "After assembly, booth components are stored in appropriate conditions. We ensure cleanliness and compliance with ecological standards, enabling their reuse in the future.";
+      case 6:
+        return widget.isPolish
+            ? "Po zakończeniu wydarzenia nasz zespół przystępuje do demontażu. Wszystkie prace są prowadzone z najwyższą starannością, pozostawiając miejsce w nienagannym stanie."
+            : "After the event, our team begins disassembly. All work is carried out with the utmost care, leaving the site in impeccable condition.";
+      case 7:
+        return widget.isPolish
+            ? "Najlepszym podsumowaniem naszej pracy jest uśmiech zadowolonego klienta oraz ciepłe słowa uznania. To dla nas najcenniejsza nagroda, która motywuje nas do dalszego działania."
+            : "The best summary our work is the smile of a satisfied client and warm words ofappreciation. This is the most valuable reward that motivates us for the future.";
+      default:
+        return "";
+    }
+  }
+
+  String _getImagePath(int number) {
+    return 'assets/Work/${[
+      'Rozmowa',
+      'Podzial',
+      'Transport',
+      'Montaz',
+      'Magazyn',
+      'Demontaz',
+      'Usmiech'
+    ][number - 1]}.png';
   }
 }

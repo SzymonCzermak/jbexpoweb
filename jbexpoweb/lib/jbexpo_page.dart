@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:jbexpoweb/MainSection/EndSection.dart';
 import 'package:jbexpoweb/MainSection/PartnerSection.dart';
 import 'package:jbexpoweb/MainSection/S1Section.dart';
+import 'package:jbexpoweb/MainSection/S2Section.dart';
 import 'package:jbexpoweb/MainSection/WelcomeSection.dart';
 import 'package:jbexpoweb/MainSection/VideoSection.dart';
 import 'package:jbexpoweb/MainSection/PortfolioSec.dart';
 import 'package:jbexpoweb/MainSection/PassionSection.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class JBExpoPage extends StatefulWidget {
   final bool isPolish;
@@ -88,7 +90,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
               scrollDirection: Axis.vertical,
-              itemCount: 7, // Liczba sekcji
+              itemCount: 8, // Liczba sekcji
               itemBuilder: (context, index) {
                 switch (index) {
                   case 0:
@@ -102,11 +104,13 @@ class _JBExpoPageState extends State<JBExpoPage> {
                   case 3:
                     return PartnerSection(isPolish: widget.isPolish);
                   case 5:
+                    return S2Section(isPolish: widget.isPolish);
+                  case 6:
                     return PortfolioSec(
                       isPolish: widget.isPolish,
                       onNavigate: widget.onNavigate, // Przekazanie onNavigate
                     );
-                  case 6:
+                  case 7:
                     return EndSection(
                       isPolish: widget.isPolish,
                     ); // Zamiana FooterWidget na EndSection

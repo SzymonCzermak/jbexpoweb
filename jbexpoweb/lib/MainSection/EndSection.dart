@@ -2,19 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jbexpoweb/FooterWidget.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart'; // Do kopiowania tekstu
+import 'package:flutter/services.dart';
 
-class EndSection extends StatelessWidget {
+class EndSection extends StatefulWidget {
   final bool isPolish;
 
   const EndSection({Key? key, required this.isPolish}) : super(key: key);
+
+  @override
+  _EndSectionState createState() => _EndSectionState();
+}
+
+class _EndSectionState extends State<EndSection> with TickerProviderStateMixin {
+  late AnimationController _textController;
+  late AnimationController _footerController;
+  late AnimationController _buttonsController;
+
+  late Animation<Offset> _textOffsetAnimation;
+  late Animation<Offset> _footerOffsetAnimation;
+  late Animation<Offset> _buttonsOffsetAnimation;
+
+  late Animation<double> _textOpacityAnimation;
+  late Animation<double> _footerOpacityAnimation;
+  late Animation<double> _buttonsOpacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _textController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _footerController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _buttonsController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _textOffsetAnimation =
+        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
+    );
+    _footerOffsetAnimation =
+        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _footerController, curve: Curves.easeOut),
+    );
+    _buttonsOffsetAnimation =
+        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
+      CurvedAnimation(parent: _buttonsController, curve: Curves.easeOut),
+    );
+
+    _textOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
+    );
+    _footerOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _footerController, curve: Curves.easeOut),
+    );
+    _buttonsOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _buttonsController, curve: Curves.easeOut),
+    );
+
+    _startAnimations();
+  }
+
+  void _startAnimations() async {
+    await _textController.forward();
+    await _footerController.forward();
+    await _buttonsController.forward();
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    _footerController.dispose();
+    _buttonsController.dispose();
+    super.dispose();
+  }
 
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          isPolish
+          widget.isPolish
               ? "Skopiowano do schowka: $text"
               : "Copied to clipboard: $text",
         ),
@@ -43,7 +117,7 @@ class EndSection extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            isPolish
+            widget.isPolish
                 ? "Nie można otworzyć Google Maps."
                 : "Unable to open Google Maps.",
           ),
@@ -57,7 +131,6 @@ class EndSection extends StatelessWidget {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isMobile = screenWidth < 600;
 
-    // Dynamiczne rozmiary przycisków w zależności od rozmiaru ekranu
     final double buttonWidth =
         isMobile ? screenWidth * 0.25 : screenWidth * 0.15;
     final double buttonHeight = isMobile ? 50.0 : 60.0;
@@ -78,77 +151,94 @@ class EndSection extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            isPolish
-                ? "Zapraszamy do kontaktu , aby dowiedzieć się więcej o naszych usługach i projektach."
-                : "Feel free to contact us to learn more about our services and projects.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.michroma(
-              fontSize: isMobile ? 16 : 22,
-              fontWeight: FontWeight.w400,
-              color: Colors.grey[400],
-              height: 1.6,
+          SlideTransition(
+            position: _textOffsetAnimation,
+            child: FadeTransition(
+              opacity: _textOpacityAnimation,
+              child: Text(
+                widget.isPolish
+                    ? "Zapraszamy do kontaktu, aby dowiedzieć się więcej o naszych usługach i projektach."
+                    : "Feel free to contact us to learn more about our services and projects.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.michroma(
+                  fontSize: isMobile ? 16 : 22,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.grey[400],
+                  height: 1.6,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 40),
-          Container(
-            width: isMobile ? screenWidth * 0.9 : screenWidth * 0.7,
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 34, 34, 34).withOpacity(0.9),
-              borderRadius: BorderRadius.circular(16.0),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.4),
-                  offset: const Offset(0, 4),
-                  blurRadius: 10,
+          SlideTransition(
+            position: _footerOffsetAnimation,
+            child: FadeTransition(
+              opacity: _footerOpacityAnimation,
+              child: Container(
+                width: isMobile ? screenWidth * 0.9 : screenWidth * 0.7,
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 34, 34, 34).withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(16.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.4),
+                      offset: const Offset(0, 4),
+                      blurRadius: 10,
+                    ),
+                  ],
+                  border: Border.all(
+                    color: const Color.fromARGB(255, 194, 181, 0),
+                    width: 2.0,
+                  ),
                 ),
-              ],
-              border: Border.all(
-                color: const Color.fromARGB(255, 161, 151, 0),
-                width: 2.0,
+                child: const FooterWidget(),
               ),
             ),
-            child: const FooterWidget(),
           ),
           const SizedBox(height: 10),
-          // Przyciski w jednym rzędzie z dynamicznymi rozmiarami
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildActionButton(
-                context: context,
-                icon: Icons.phone,
-                label: isPolish ? "Zadzwoń" : "Call",
-                onTap: () => _launchPhone(context),
-                width: buttonWidth,
-                height: buttonHeight,
-                fontSize: fontSize,
-                iconSize: iconSize,
+          SlideTransition(
+            position: _buttonsOffsetAnimation,
+            child: FadeTransition(
+              opacity: _buttonsOpacityAnimation,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildActionButton(
+                    context: context,
+                    icon: Icons.phone,
+                    label: widget.isPolish ? "Zadzwoń" : "Call",
+                    onTap: () => _launchPhone(context),
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildActionButton(
+                    context: context,
+                    icon: Icons.email,
+                    label: widget.isPolish ? "Kopiuj Email" : "Copy Email",
+                    onTap: () => _copyToClipboard(context, "jbexpo@jbexpo.pl"),
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                  const SizedBox(width: 16),
+                  _buildActionButton(
+                    context: context,
+                    icon: Icons.map,
+                    label: widget.isPolish ? "Google Maps" : "Google Maps",
+                    onTap: () => _launchGoogleMaps(context),
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    fontSize: fontSize,
+                    iconSize: iconSize,
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              _buildActionButton(
-                context: context,
-                icon: Icons.email,
-                label: isPolish ? "Kopiuj Email" : "Copy Email",
-                onTap: () => _copyToClipboard(context, "jbexpo@jbexpo.pl"),
-                width: buttonWidth,
-                height: buttonHeight,
-                fontSize: fontSize,
-                iconSize: iconSize,
-              ),
-              const SizedBox(width: 16),
-              _buildActionButton(
-                context: context,
-                icon: Icons.map,
-                label: isPolish ? "Google Maps" : "Google Maps",
-                onTap: () => _launchGoogleMaps(context),
-                width: buttonWidth,
-                height: buttonHeight,
-                fontSize: fontSize,
-                iconSize: iconSize,
-              ),
-            ],
+            ),
           ),
         ],
       ),

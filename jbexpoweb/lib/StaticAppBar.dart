@@ -22,7 +22,7 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isSmallScreen = screenWidth < 1400;
+    final bool isSmallScreen = screenWidth < 1470;
 
     return AppBar(
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
@@ -150,22 +150,23 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                 },
               );
             },
-            color: Colors.green, // Dodano zielony kolor dla ikony kontaktu
+            color: const Color.fromARGB(
+                255, 197, 72, 0), // Dodano zielony kolor dla ikony kontaktu
           ),
 
           _buildIconWithTextButton(
             context,
-            FontAwesomeIcons.xTwitter,
-            "X",
+            FontAwesomeIcons.whatsapp,
+            "WhatsApp",
             onTap: () async {
-              const url = 'https://x.com/JBEXPO1';
+              const url = 'https://wa.me/515000868'; // <-- zmień na swój numer
               if (await canLaunch(url)) {
                 await launch(url);
               }
             },
-            color: const Color.fromARGB(
-                255, 112, 112, 112), // Dodano żółty kolor dla ikony Google
+            color: Colors.green,
           ),
+
           _buildIconWithTextButton(
             context,
             FontAwesomeIcons.instagram, // Ikona Instagrama z FontAwesome
@@ -205,6 +206,20 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
             },
             color: Colors.blue, // Dodano niebieski kolor dla ikony Facebook
           ),
+          _buildIconWithTextButton(
+            context,
+            FontAwesomeIcons.weixin, // WeChat w FontAwesome nazywa się weixin
+            "WeChat",
+            onTap: () async {
+              const url =
+                  'https://weixin.qq.com/'; // <- domyślna strona WeChat lub Twój link, jeśli masz
+              if (await canLaunch(url)) {
+                await launch(url);
+              }
+            },
+            color: const Color.fromARGB(
+                255, 0, 185, 0), // Zielony typowy dla WeChat
+          ),
         ] else ...[
           // Small screen layout
           PopupMenuButton<int>(
@@ -225,28 +240,26 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
               _buildMenuItem(4, isPolish ? "Lokalizacja" : "Location",
                   Icons.location_on, const Color.fromARGB(255, 194, 181, 0)),
               const PopupMenuDivider(),
-              _buildMenuItem(-1, isPolish ? "Kontakt" : "Contact",
-                  FontAwesomeIcons.envelope, Colors.orange),
+              _buildMenuItem(
+                -1,
+                isPolish ? "Kontakt" : "Contact",
+                FontAwesomeIcons.envelope,
+                const Color.fromARGB(255, 197, 72, 0),
+              ),
+              _buildMenuItem(-5, "WhatsApp", FontAwesomeIcons.whatsapp,
+                  Colors.green), // NOWY WhatsApp
               _buildMenuItem(
                   -2, "Google", FontAwesomeIcons.google, Colors.yellow),
               _buildMenuItem(
                   -3, "Facebook", FontAwesomeIcons.facebook, Colors.blue),
-              _buildMenuItem(-5, "Instagram", FontAwesomeIcons.instagram,
+              _buildMenuItem(-4, "Instagram", FontAwesomeIcons.instagram,
                   const Color.fromARGB(255, 253, 0, 219)),
-              _buildMenuItem(-6, "X", FontAwesomeIcons.xTwitter,
-                  const Color.fromARGB(255, 80, 80, 80)),
+              _buildMenuItem(-7, "WeChat", FontAwesomeIcons.weixin,
+                  const Color.fromARGB(255, 0, 185, 0)), // NOWY WeChat
             ],
             onSelected: (value) async {
               if (value >= 0) {
                 onNavigate(value);
-              } else if (value == -4) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CompanyLocationWebPage(isPolish: isPolish),
-                  ),
-                );
               } else if (value == -1) {
                 showDialog(
                   context: context,
@@ -259,6 +272,17 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                     );
                   },
                 );
+              } else if (value == -5) {
+                const url =
+                    'https://wa.me/48600123456'; // <- Twój WhatsApp numer
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
+              } else if (value == -7) {
+                const url = 'https://weixin.qq.com/'; // <- Twój link do WeChat
+                if (await canLaunch(url)) {
+                  await launch(url);
+                }
               } else if (value == -2) {
                 const url = 'https://g.co/kgs/9fbbLNN';
                 if (await canLaunch(url)) {
@@ -270,14 +294,9 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                 if (await canLaunch(url)) {
                   await launch(url);
                 }
-              } else if (value == -5) {
+              } else if (value == -4) {
                 const url =
                     'https://www.instagram.com/jbexpoplus?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==';
-                if (await canLaunch(url)) {
-                  await launch(url);
-                }
-              } else if (value == -6) {
-                const url = 'https://x.com/JBEXPO1';
                 if (await canLaunch(url)) {
                   await launch(url);
                 }

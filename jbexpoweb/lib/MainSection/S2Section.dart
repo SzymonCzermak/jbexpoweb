@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class S1Section extends StatefulWidget {
+class S2Section extends StatefulWidget {
   final bool isPolish;
 
-  const S1Section({Key? key, required this.isPolish}) : super(key: key);
+  const S2Section({Key? key, required this.isPolish}) : super(key: key);
 
   @override
-  _S1SectionState createState() => _S1SectionState();
+  _S2SectionState createState() => _S2SectionState();
 }
 
-class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
+class _S2SectionState extends State<S2Section> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _widthAnimation;
 
@@ -18,20 +18,16 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
   late Animation<Offset> _textOffsetAnimation;
   late Animation<double> _textOpacityAnimation;
 
-  late AnimationController _serviceController;
-  late Animation<Offset> _serviceOffsetAnimation;
-  late Animation<double> _serviceOpacityAnimation;
-
   late AnimationController _dividerController;
   late Animation<double> _dividerWidthAnimation;
 
-  late AnimationController _productionController;
-  late Animation<Offset> _productionOffsetAnimation;
-  late Animation<double> _productionOpacityAnimation;
+  late AnimationController _firstItemController;
+  late Animation<Offset> _firstItemOffsetAnimation;
+  late Animation<double> _firstItemOpacityAnimation;
 
-  late AnimationController _equipmentController;
-  late Animation<Offset> _equipmentOffsetAnimation;
-  late Animation<double> _equipmentOpacityAnimation;
+  late AnimationController _secondItemController;
+  late Animation<Offset> _secondItemOffsetAnimation;
+  late Animation<double> _secondItemOpacityAnimation;
 
   @override
   void initState() {
@@ -69,26 +65,6 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
       ),
     );
 
-    _serviceController = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-
-    _serviceOffsetAnimation =
-        Tween<Offset>(begin: Offset(0, 1), end: Offset.zero).animate(
-      CurvedAnimation(
-        parent: _serviceController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
-    _serviceOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _serviceController,
-        curve: Curves.easeInOut,
-      ),
-    );
-
     _dividerController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -101,42 +77,42 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
       ),
     );
 
-    _productionController = AnimationController(
+    _firstItemController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    _productionOffsetAnimation =
+    _firstItemOffsetAnimation =
         Tween<Offset>(begin: Offset(-1, 0), end: Offset.zero).animate(
       CurvedAnimation(
-        parent: _productionController,
+        parent: _firstItemController,
         curve: Curves.easeInOut,
       ),
     );
 
-    _productionOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _firstItemOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _productionController,
+        parent: _firstItemController,
         curve: Curves.easeInOut,
       ),
     );
 
-    _equipmentController = AnimationController(
+    _secondItemController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     );
 
-    _equipmentOffsetAnimation =
+    _secondItemOffsetAnimation =
         Tween<Offset>(begin: Offset(1, 0), end: Offset.zero).animate(
       CurvedAnimation(
-        parent: _equipmentController,
+        parent: _secondItemController,
         curve: Curves.easeInOut,
       ),
     );
 
-    _equipmentOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+    _secondItemOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
-        parent: _equipmentController,
+        parent: _secondItemController,
         curve: Curves.easeInOut,
       ),
     );
@@ -144,8 +120,8 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
     _controller.forward();
     _textController.forward().then((_) {
       _dividerController.forward().then((_) {
-        _productionController.forward().then((_) {
-          _equipmentController.forward();
+        _firstItemController.forward().then((_) {
+          _secondItemController.forward();
         });
       });
     });
@@ -155,10 +131,9 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
   void dispose() {
     _controller.dispose();
     _textController.dispose();
-    _serviceController.dispose();
     _dividerController.dispose();
-    _productionController.dispose();
-    _equipmentController.dispose();
+    _firstItemController.dispose();
+    _secondItemController.dispose();
     super.dispose();
   }
 
@@ -185,48 +160,7 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
                   style: GoogleFonts.michroma(
                     fontSize: isSmallScreen ? 24.0 : 80.0,
                     fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SlideTransition(
-              position: _serviceOffsetAnimation,
-              child: FadeTransition(
-                opacity: _serviceOpacityAnimation,
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: GoogleFonts.michroma(
-                      fontSize: isSmallScreen ? 12.0 : 16.0,
-                      fontWeight: FontWeight.w400,
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: widget.isPolish ? 'Oferujemy ' : 'We offer a ',
-                      ),
-                      TextSpan(
-                        text: widget.isPolish
-                            ? 'szeroki zakres usług'
-                            : 'wide range of services',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 194, 181, 0),
-                        ),
-                      ),
-                      TextSpan(
-                        text: widget.isPolish
-                            ? ', aby spełnić wszystkie '
-                            : ' to meet all your ',
-                      ),
-                      TextSpan(
-                        text: widget.isPolish ? 'Twoje potrzeby.' : 'needs.',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 194, 181, 0),
-                        ),
-                      ),
-                    ],
+                    color: Colors.white,
                   ),
                 ),
               ),
@@ -238,20 +172,22 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
                 return Container(
                   width: _dividerWidthAnimation.value * screenWidth * 0.8,
                   height: 2,
-                  color: const Color.fromARGB(255, 255, 255, 255),
+                  color: Colors.white,
                 );
               },
             ),
             const SizedBox(height: 40),
             SlideTransition(
-              position: _productionOffsetAnimation,
+              position: _firstItemOffsetAnimation,
               child: FadeTransition(
-                opacity: _productionOpacityAnimation,
-                child: _buildServiceItem(
+                opacity: _firstItemOpacityAnimation,
+                child: _buildProjectItem(
                   context,
-                  widget.isPolish ? 'Produkcja' : 'Production',
-                  _buildProductionDescription(),
-                  'assets/jbexpo/Produkcja.png',
+                  widget.isPolish
+                      ? 'Profesjonalni montażyści'
+                      : 'Professional Fitters',
+                  _buildFittersDescription(),
+                  'assets/jbexpo/Pracownicy.png',
                   isImageLeft: true,
                   isLargeScreen: isLargeScreen,
                 ),
@@ -259,16 +195,14 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 20),
             SlideTransition(
-              position: _equipmentOffsetAnimation,
+              position: _secondItemOffsetAnimation,
               child: FadeTransition(
-                opacity: _equipmentOpacityAnimation,
-                child: _buildServiceItem(
+                opacity: _secondItemOpacityAnimation,
+                child: _buildProjectItem(
                   context,
-                  widget.isPolish
-                      ? 'Profesjonalny sprzęt'
-                      : 'Professional Equipment',
-                  _buildEquipmentDescription(),
-                  'assets/jbexpo/Sprzet.png',
+                  widget.isPolish ? 'Logistyka' : 'Logistics',
+                  _buildLogisticsDescription(),
+                  'assets/jbexpo/Logistyka.png',
                   isImageLeft: false,
                   isLargeScreen: isLargeScreen,
                 ),
@@ -280,9 +214,14 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildServiceItem(BuildContext context, String title,
-      InlineSpan description, String imagePath,
-      {required bool isImageLeft, required bool isLargeScreen}) {
+  Widget _buildProjectItem(
+    BuildContext context,
+    String title,
+    InlineSpan description,
+    String imagePath, {
+    required bool isImageLeft,
+    required bool isLargeScreen,
+  }) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final bool isSmallScreen = screenWidth < 600;
 
@@ -318,7 +257,7 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
                       fontSize:
                           isLargeScreen ? 42.0 : (isSmallScreen ? 18.0 : 24.0),
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -328,7 +267,7 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
                       return Container(
                         width: _widthAnimation.value * screenWidth * 0.2,
                         height: 2,
-                        color: const Color.fromARGB(255, 255, 255, 255),
+                        color: Colors.white,
                       );
                     },
                   ),
@@ -361,7 +300,7 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
     );
   }
 
-  TextSpan _buildProductionDescription() {
+  TextSpan _buildFittersDescription() {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
     return TextSpan(
       style: GoogleFonts.michroma(
@@ -370,29 +309,30 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
         color: Colors.white,
       ),
       children: [
-        TextSpan(text: widget.isPolish ? 'Dzięki ' : 'Thanks to our '),
+        TextSpan(text: widget.isPolish ? 'Posiadamy ' : 'We have a '),
         TextSpan(
-          text: widget.isPolish ? 'własnej produkcji' : 'own production',
+          text: widget.isPolish ? 'doświadczony zespół' : 'professional team',
           style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
         ),
         TextSpan(
-            text: widget.isPolish
-                ? ' i zaangażowaniu pracowników, nasza firma realizuje stoiska targowe o każdej wielkości — zarówno '
-                : ' and employee engagement, our company builds booths of any size — both '),
+          text: widget.isPolish
+              ? ', który zajmuje się montażem stoisk oraz demontażem po wydarzeniu. Dbamy o '
+              : ', handling booth assembly and disassembly. We ensure ',
+        ),
         TextSpan(
-          text: widget.isPolish ? 'małe' : 'small',
+          text: widget.isPolish ? 'precyzję' : 'precision',
           style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
         ),
-        TextSpan(text: widget.isPolish ? ' jak i ' : ' and '),
         TextSpan(
-          text: widget.isPolish ? 'duże.' : 'large.',
-          style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
+          text: widget.isPolish
+              ? ' i sprawną organizację pracy.'
+              : ' and smooth organization.',
         ),
       ],
     );
   }
 
-  TextSpan _buildEquipmentDescription() {
+  TextSpan _buildLogisticsDescription() {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return TextSpan(
@@ -402,34 +342,28 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
         color: Colors.white,
       ),
       children: [
-        TextSpan(
-            text: widget.isPolish
-                ? 'Nasza firma dysponuje '
-                : 'Our company has '),
+        TextSpan(text: widget.isPolish ? 'Bierzemy ' : 'We take '),
         TextSpan(
           text: widget.isPolish
-              ? 'profesjonalnym sprzętem'
-              : 'professional equipment',
+              ? 'pełną odpowiedzialność'
+              : 'full responsibility',
           style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
         ),
         TextSpan(
-            text: widget.isPolish
-                ? ', w tym maszyną CNC, która zapewnia '
-                : ', including a CNC machine that ensures '),
+          text: widget.isPolish
+              ? ' za transport stoisk na wydarzenia targowe. Klienci nie muszą się '
+              : ' for transporting booths to trade events. Clients don’t have to ',
+        ),
         TextSpan(
           text:
-              widget.isPolish ? 'najwyższą precyzję' : 'the highest precision',
-          style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
-        ),
-        TextSpan(text: widget.isPolish ? ' i ' : ' and '),
-        TextSpan(
-          text: widget.isPolish ? 'dokładność' : 'accuracy',
+              widget.isPolish ? 'martwić o logistykę' : 'worry about logistics',
           style: const TextStyle(color: Color.fromARGB(255, 194, 181, 0)),
         ),
         TextSpan(
-            text: widget.isPolish
-                ? ' w produkcji stoisk targowych.'
-                : ' in the production of trade booths.'),
+          text: widget.isPolish
+              ? ' — dostarczamy na czas i w idealnym stanie.'
+              : ' — we deliver on time and in perfect condition.',
+        ),
       ],
     );
   }

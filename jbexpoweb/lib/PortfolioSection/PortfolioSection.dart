@@ -17,13 +17,13 @@ class _PortfolioPageState extends State<PortfolioPage> {
   final ScrollController _scrollController = ScrollController();
 
   final List<Map<String, String>> _projects = List.generate(
-    21,
+    30,
     (index) => {
       "imagePath": 'assets/Stoiska/${index + 1}.png',
     },
   );
 
-  final List<bool> _hoverStates = List.generate(21, (_) => false);
+  final List<bool> _hoverStates = List.generate(30, (_) => false);
 
   @override
   void dispose() {
@@ -42,6 +42,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
             : 3;
 
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Listener(
         onPointerSignal: (pointerSignal) {
           if (pointerSignal is PointerScrollEvent) {

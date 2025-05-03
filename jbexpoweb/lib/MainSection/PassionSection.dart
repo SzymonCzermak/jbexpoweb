@@ -39,7 +39,7 @@ class _PassionSectionState extends State<PassionSection>
     );
 
     _slideAnimationHeader =
-        Tween<Offset>(begin: const Offset(0, -1.0), end: Offset.zero).animate(
+        Tween<Offset>(begin: const Offset(0, 1.0), end: Offset.zero).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
@@ -102,11 +102,11 @@ class _PassionSectionState extends State<PassionSection>
                 opacity: _opacityAnimationHeader,
                 child: Text(
                   widget.isPolish
-                      ? 'Pasja do tworzenia przestrzeni'
+                      ? 'Pasja do tworzenia przestrzenii'
                       : 'A passion for creating spaces',
                   textAlign: TextAlign.center,
                   style: GoogleFonts.michroma(
-                    fontSize: isSmallScreen ? 36.0 : 80.0,
+                    fontSize: isSmallScreen ? 32.0 : 80.0,
                     fontWeight: FontWeight.bold,
                     color: const Color.fromARGB(255, 216, 216, 216),
                   ),
@@ -125,7 +125,7 @@ class _PassionSectionState extends State<PassionSection>
                           ? 'Nasz kompleksowy pakiet usług '
                           : 'Our comprehensive suite of professional services ',
                       style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontSize: isSmallScreen ? 12.0 : 18.0,
                         fontWeight: FontWeight.w400,
                         height: 1.5,
                         color: const Color.fromARGB(255, 216, 216, 216),
@@ -136,7 +136,7 @@ class _PassionSectionState extends State<PassionSection>
                           ? 'skierowany jest do szerokiej gamy klientów, '
                           : 'caters to a diverse clientele, ',
                       style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontSize: isSmallScreen ? 12.0 : 18.0,
                         fontWeight: FontWeight.w400,
                         height: 1.5,
                         color: const Color.fromARGB(255, 161, 151, 0),
@@ -147,7 +147,7 @@ class _PassionSectionState extends State<PassionSection>
                           ? 'od właścicieli domów po deweloperów komercyjnych.'
                           : 'ranging from homeowners to commercial developers.',
                       style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
+                        fontSize: isSmallScreen ? 12.0 : 18.0,
                         fontWeight: FontWeight.w400,
                         height: 1.5,
                         color: const Color.fromARGB(255, 216, 216, 216),
@@ -208,15 +208,15 @@ class _PassionSectionState extends State<PassionSection>
             'Ciągłe wsparcie',
             'Wydajność',
             'Doradztwo',
-            'Zarządzanie projektami',
+            'Zarządzanie ',
             'Profesjonalizm'
           ][index]
         : [
             'Creativity',
-            'Continuous Support',
+            'Support',
             'Efficiency',
             'Consulting',
-            'Project Management',
+            'Management',
             'Professionalism'
           ][index];
   }
@@ -299,6 +299,8 @@ class __AnimatedServiceCardState extends State<_AnimatedServiceCard>
 
   @override
   Widget build(BuildContext context) {
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
     return MouseRegion(
       onEnter: (_) => _controller.forward(),
       onExit: (_) => _controller.reverse(),
@@ -335,7 +337,7 @@ class __AnimatedServiceCardState extends State<_AnimatedServiceCard>
                 widget.description,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.michroma(
-                  fontSize: 12.0,
+                  fontSize: isSmallScreen ? 8.0 : 12.0,
                   fontWeight: FontWeight.w400,
                   color: const Color.fromARGB(255, 216, 216, 216),
                 ),

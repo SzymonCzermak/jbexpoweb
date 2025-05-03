@@ -33,9 +33,10 @@ class _VideoSectionState extends State<VideoSection> {
   }
 
   void _initializeVideo() {
-    // Reset kontrolera i inicjalizacja od początku
-    _controller = VideoPlayerController.asset('assets/JBExpoPlus_Loga.mp4')
-      ..setVolume(0) // Wyciszenie wideo (ważne dla automatycznego startu)
+    _controller = VideoPlayerController.network(
+      'assets/JBExpoPlus_Loga.mp4', // <- ważne: przez sieć, nie jako asset!
+    )
+      ..setVolume(0)
       ..initialize().then((_) {
         if (mounted) {
           setState(() {
