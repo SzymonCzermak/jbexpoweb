@@ -1,8 +1,9 @@
+import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart';
 import 'package:jbexpoweb/FooterWidget.dart';
 
 class AboutUsPage extends StatefulWidget {
@@ -19,16 +20,15 @@ class _AboutUsPageState extends State<AboutUsPage>
   late List<bool> _visibleList;
   late AnimationController _shakeController;
   late Animation<double> _shakeAnimation;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
 
-    // Lista kontrolująca widoczność każdej kafelki
     _visibleList = List.filled(4, false);
     _triggerAnimations();
 
-    // Inicjalizacja kontrolera animacji dla efektu trzęsienia
     _shakeController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -45,10 +45,9 @@ class _AboutUsPageState extends State<AboutUsPage>
 
   Future<void> _triggerAnimations() async {
     for (int i = 0; i < _visibleList.length; i++) {
-      await Future.delayed(
-          const Duration(milliseconds: 200)); // Opóźnienie między kafelkami
+      await Future.delayed(const Duration(milliseconds: 200));
       setState(() {
-        _visibleList[i] = true; // Ustaw widoczność dla kolejnych kafelków
+        _visibleList[i] = true;
       });
     }
   }
@@ -56,6 +55,7 @@ class _AboutUsPageState extends State<AboutUsPage>
   @override
   void dispose() {
     _shakeController.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -64,10 +64,8 @@ class _AboutUsPageState extends State<AboutUsPage>
     final List<Map<String, String>> teamMembers = [
       {
         "name": "Jakub Bagrowski",
-        "position": widget.isPolish
-            ? "Kierownik Zespołu, Szef"
-            : "Team Leader, Chief Executive",
-        "phone": "+48 51 5000 868",
+        "position": widget.isPolish ? "Kierownik Zespołu" : "Team Leader",
+        "phone": "+48 515 000 868",
         "email": "jbexpo@jbexpo.pl",
         "image": "assets/JakubBagrowski.png",
       },
@@ -77,37 +75,70 @@ class _AboutUsPageState extends State<AboutUsPage>
             widget.isPolish ? "Kierownik Zarządzania" : "Management Supervisor",
         "phone": "+48 786 669 657",
         "email": "jbexpoplus@gmail.com",
-        "image": "assets/pigi.png",
+        "image": "assets/LogoKostki.png",
       },
       {
         "name": "Magdalena Kostrzewska",
         "position":
             widget.isPolish ? "Kierownik Logistyki" : "Logistics Manager",
-        "phone": "+48 695 422 216",
+        "phone": "+48 572 634 224",
         "email": "jbexpoplus.biuro@gmail.com",
         "image": "assets/MagdalenaKostrzewska.png",
       },
     ];
 
     return Scaffold(
-      body: DynMouseScroll(
-        builder: (context, controller, physics) => SingleChildScrollView(
-          controller: controller,
-          physics: physics,
+      backgroundColor: Colors.black,
+      body: Listener(
+        onPointerSignal: (pointerSignal) {
+          if (pointerSignal is PointerScrollEvent) {
+            _handleScroll(pointerSignal);
+          }
+        },
+        child: SingleChildScrollView(
+          controller: _scrollController,
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.asset(
-                  'assets/Background3.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Center(
-                      child: Text(
-                        "Background image not found",
-                        style: TextStyle(color: Colors.white),
+                child: Stack(
+                  children: [
+                    Container(color: Colors.black), // Czarne tło bazowe
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.topLeft,
+                          radius: 2,
+                          colors: [
+                            Color.fromARGB(100, 255, 0, 0), // Czerwony rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.bottomRight,
+                          radius: 6,
+                          colors: [
+                            Color.fromARGB(
+                                100, 0, 0, 255), // Niebieski rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/Background3.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Column(
@@ -118,7 +149,7 @@ class _AboutUsPageState extends State<AboutUsPage>
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 20.0),
                     child: Divider(
-                      color: Color.fromARGB(255, 255, 255, 255),
+                      color: Colors.white,
                       thickness: 2,
                       indent: 50,
                       endIndent: 50,
@@ -133,6 +164,20 @@ class _AboutUsPageState extends State<AboutUsPage>
         ),
       ),
     );
+  }
+
+  void _handleScroll(PointerScrollEvent pointerSignal) {
+    final double delta = pointerSignal.scrollDelta.dy;
+    bool isTouchpad = delta.abs() < 50;
+    double offsetChange = delta * (isTouchpad ? 0.5 : 1.0);
+
+    double newOffset = _scrollController.offset + offsetChange;
+    newOffset = newOffset.clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    _scrollController.jumpTo(newOffset);
   }
 
   Widget _buildHeader(BuildContext context) {
@@ -163,7 +208,7 @@ class _AboutUsPageState extends State<AboutUsPage>
         const Padding(
           padding: EdgeInsets.symmetric(vertical: 20.0),
           child: Divider(
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: Colors.white,
             thickness: 2,
             indent: 50,
             endIndent: 50,
@@ -191,24 +236,30 @@ class _AboutUsPageState extends State<AboutUsPage>
           itemCount: teamMembers.length,
           itemBuilder: (context, index) {
             final member = teamMembers[index];
-            return GestureDetector(
-              onTap: () {
-                _shakeController.reset();
-                _shakeController.forward(); // Uruchomienie animacji trzęsienia
-              },
-              child: AnimatedBuilder(
-                animation: _shakeAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(_shakeAnimation.value, 0), // Ruch poziomy
-                    child: AnimatedOpacity(
-                      opacity: _visibleList[index] ? 1 : 0,
-                      duration: const Duration(milliseconds: 500),
-                      curve: Curves.easeInOut,
-                      child: _buildTeamCard(member, context),
-                    ),
-                  );
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal:
+                    MediaQuery.of(context).size.width < 600 ? 24.0 : 0.0,
+              ),
+              child: GestureDetector(
+                onTap: () {
+                  _shakeController.reset();
+                  _shakeController.forward();
                 },
+                child: AnimatedBuilder(
+                  animation: _shakeAnimation,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(_shakeAnimation.value, 0),
+                      child: AnimatedOpacity(
+                        opacity: _visibleList[index] ? 1 : 0,
+                        duration: const Duration(milliseconds: 500),
+                        curve: Curves.easeInOut,
+                        child: _buildTeamCard(member, context),
+                      ),
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -303,43 +354,67 @@ class _AboutUsPageState extends State<AboutUsPage>
     bool isCopyable = false,
     bool isPhone = false,
   }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        GestureDetector(
-          onTap: isPhone ? () => _launchPhone(text) : null,
-          child: Icon(icon, color: color, size: 18),
-        ),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Text(
-            text,
-            style: GoogleFonts.openSans(
-              fontSize: 14,
-              color: Colors.white,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: isPhone ? () => _launchPhone(text) : null,
+              child: Icon(icon, color: color, size: 18),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        if (isCopyable) const SizedBox(width: 8),
-        if (isCopyable)
-          GestureDetector(
-            onTap: () {
-              Clipboard.setData(ClipboardData(text: text));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    widget.isPolish
-                        ? "Skopiowano do schowka!"
-                        : "Copied to clipboard!",
-                  ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                text,
+                style: GoogleFonts.openSans(
+                  fontSize: 14,
+                  color: Colors.white,
                 ),
-              );
-            },
-            child: Icon(
-              Icons.copy,
-              color: Colors.grey[400],
-              size: 18,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            if (isCopyable) const SizedBox(width: 8),
+            if (isCopyable)
+              GestureDetector(
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: text));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        widget.isPolish
+                            ? "Skopiowano do schowka!"
+                            : "Copied to clipboard!",
+                      ),
+                    ),
+                  );
+                },
+                child: Icon(
+                  Icons.copy,
+                  color: Colors.grey[400],
+                  size: 18,
+                ),
+              ),
+          ],
+        ),
+        if (isPhone)
+          Padding(
+            padding: const EdgeInsets.only(top: 6.0),
+            child: TextButton.icon(
+              style: TextButton.styleFrom(
+                backgroundColor: color.withOpacity(0.2),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: () => _launchPhone(text),
+              icon: const Icon(Icons.call, size: 16, color: Colors.white),
+              label: Text(
+                widget.isPolish ? "Zadzwoń" : "Call",
+                style: const TextStyle(color: Colors.white, fontSize: 13),
+              ),
             ),
           ),
       ],

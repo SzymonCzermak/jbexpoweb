@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:jbexpoweb/CompanyLocationPage.dart';
 import 'package:jbexpoweb/contact_dialog.dart';
+import 'package:jbexpoweb/wechat_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -33,10 +33,21 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
           const SizedBox(width: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Image.asset(
-              'assets/JBExpoLogo.png',
-              height: 85.0,
-              fit: BoxFit.contain,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final screenHeight = MediaQuery.of(context).size.height;
+                final logoHeight =
+                    screenHeight * 0.07; // np. 7% wysokości ekranu
+
+                return InkWell(
+                  onTap: () => onNavigate(0),
+                  child: Image.asset(
+                    'assets/JBExpoLogo.png',
+                    height: logoHeight.clamp(70.0, 85.0),
+                    fit: BoxFit.contain,
+                  ),
+                );
+              },
             ),
           ),
           const Spacer(),
@@ -208,17 +219,26 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           _buildIconWithTextButton(
             context,
-            FontAwesomeIcons.weixin, // WeChat w FontAwesome nazywa się weixin
-            "WeChat",
-            onTap: () async {
-              const url =
-                  'https://weixin.qq.com/'; // <- domyślna strona WeChat lub Twój link, jeśli masz
-              if (await canLaunch(url)) {
-                await launch(url);
-              }
+            FontAwesomeIcons.weixin, // ✅ Ikona WeChat (FontAwesome)
+            isPolish ? "WeChat" : "WeChat",
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return WeChatDialog(
+                    isPolish: isPolish,
+                    borderGradient: const LinearGradient(
+                      colors: [
+                        Color.fromARGB(255, 0, 163, 22),
+                        Color.fromARGB(255, 0, 63, 26)
+                      ],
+                    ),
+                  );
+                },
+              );
             },
             color: const Color.fromARGB(
-                255, 0, 185, 0), // Zielony typowy dla WeChat
+                255, 0, 185, 0), // typowy zielony dla WeChat
           ),
         ] else ...[
           // Small screen layout
@@ -273,16 +293,25 @@ class StaticAppBar extends StatelessWidget implements PreferredSizeWidget {
                   },
                 );
               } else if (value == -5) {
-                const url =
-                    'https://wa.me/48600123456'; // <- Twój WhatsApp numer
+                const url = 'https://wa.me/515000868'; // <- Twój WhatsApp numer
                 if (await canLaunch(url)) {
                   await launch(url);
                 }
               } else if (value == -7) {
-                const url = 'https://weixin.qq.com/'; // <- Twój link do WeChat
-                if (await canLaunch(url)) {
-                  await launch(url);
-                }
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return WeChatDialog(
+                      isPolish: isPolish,
+                      borderGradient: const LinearGradient(
+                        colors: [
+                          Color.fromARGB(255, 0, 163, 22),
+                          Color.fromARGB(255, 0, 63, 26)
+                        ],
+                      ),
+                    );
+                  },
+                );
               } else if (value == -2) {
                 const url = 'https://g.co/kgs/9fbbLNN';
                 if (await canLaunch(url)) {

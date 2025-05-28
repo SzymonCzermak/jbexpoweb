@@ -1,7 +1,7 @@
+import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dyn_mouse_scroll/dyn_mouse_scroll.dart';
 import 'package:jbexpoweb/FooterWidget.dart';
 
 class PortfolioPage extends StatefulWidget {
@@ -24,6 +24,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
   );
 
   final List<bool> _hoverStates = List.generate(30, (_) => false);
+  final Map<String, bool> _imageLoaded = {};
 
   @override
   void dispose() {
@@ -54,9 +55,45 @@ class _PortfolioPageState extends State<PortfolioPage> {
           child: Stack(
             children: [
               Positioned.fill(
-                child: Image.asset(
-                  'assets/Background3.png',
-                  fit: BoxFit.cover,
+                child: Stack(
+                  children: [
+                    Container(color: Colors.black), // Czarne tło bazowe
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.topLeft,
+                          radius: 2,
+                          colors: [
+                            Color.fromARGB(100, 255, 0, 0), // Czerwony rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.bottomRight,
+                          radius: 4,
+                          colors: [
+                            Color.fromARGB(
+                                100, 0, 0, 255), // Niebieski rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/Background3.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Column(
@@ -150,6 +187,8 @@ class _PortfolioPageState extends State<PortfolioPage> {
     required bool isHovered,
     required Function(bool) onHover,
   }) {
+    final alreadyLoaded = _imageLoaded[imagePath] == true;
+
     return MouseRegion(
       onEnter: (_) => onHover(true),
       onExit: (_) => onHover(false),
@@ -159,29 +198,78 @@ class _PortfolioPageState extends State<PortfolioPage> {
           scale: isHovered ? 1.05 : 1.0,
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
-          child: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(imagePath),
-                fit: BoxFit.cover,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: const Color.fromARGB(134, 194, 181, 0),
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 5,
-                  offset: const Offset(0, 3),
+          child: alreadyLoaded
+              ? _buildImageContainer(imagePath)
+              : FutureBuilder<void>(
+                  future: _loadImage(imagePath),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState != ConnectionState.done) {
+                      return _buildLoader();
+                    }
+                    _imageLoaded[imagePath] = true;
+                    return _buildImageContainer(imagePath);
+                  },
                 ),
-              ],
-            ),
-          ),
         ),
       ),
     );
+  }
+
+  Widget _buildLoader() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromARGB(134, 194, 181, 0),
+          width: 2,
+        ),
+      ),
+      alignment: Alignment.center,
+      child: const CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(
+          Color.fromARGB(255, 194, 181, 0),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImageContainer(String imagePath) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(imagePath),
+          fit: BoxFit.cover,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color.fromARGB(134, 194, 181, 0),
+          width: 2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 5,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _loadImage(String path) {
+    final completer = Completer<void>();
+    final image = AssetImage(path);
+    final config = createLocalImageConfiguration(context);
+
+    image.resolve(config).addListener(
+          ImageStreamListener(
+            (info, _) => completer.complete(),
+            onError: (_, __) => completer.complete(),
+          ),
+        );
+
+    return completer.future;
   }
 
   void _showFullScreenImage(String imagePath) {

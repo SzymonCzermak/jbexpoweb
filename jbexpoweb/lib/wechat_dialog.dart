@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class ContactDialog extends StatelessWidget {
+class WeChatDialog extends StatelessWidget {
   final bool isPolish;
   final Gradient borderGradient;
 
-  const ContactDialog({
+  const WeChatDialog({
     Key? key,
     required this.isPolish,
     required this.borderGradient,
   }) : super(key: key);
+
+  final String phoneNumber = '+48 515 000 868';
+  final String wechatUrl = 'https://www.wechat.com/en/';
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +24,10 @@ class ContactDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: Container(
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [
-              Color.fromARGB(255, 216, 104, 0), // Złoty początek gradientu
-              Color.fromARGB(253, 97, 47, 0), // Złoty koniec gradientu
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          gradient: borderGradient,
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.all(2), // Cieńsza ramka
+        padding: const EdgeInsets.all(2),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.black,
@@ -45,35 +42,28 @@ class ContactDialog extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    isPolish ? "Kontakt" : "Contact",
+                    "WeChat",
                     style: GoogleFonts.openSans(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 60, 255, 0),
+                      color: const Color.fromARGB(255, 0, 185, 0),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildContactItem(
+                  _buildWeChatItem(
                     context: context,
-                    icon: Icons.location_on,
-                    text: isPolish
-                        ? 'Strzałkowo 62-420 Dworcowa 1'
-                        : 'Strzałkowo 62-420 Dworcowa 1',
-                    color: Colors.blueAccent,
+                    icon: Icons.chat_bubble_outline,
+                    text: wechatUrl,
+                    color: Colors.green,
+                    isLink: true,
                   ),
                   const SizedBox(height: 15),
-                  _buildContactItem(
+                  _buildWeChatItem(
                     context: context,
-                    icon: Icons.phone,
-                    text: isPolish ? '+48 515 000 868' : '+48 515 000 868',
-                    color: Colors.redAccent,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildContactItem(
-                    context: context,
-                    icon: Icons.email,
-                    text: 'jbexpo@jbexpo.pl',
-                    color: Colors.blueAccent,
+                    icon: Icons.phone_android,
+                    text: phoneNumber,
+                    color: Colors.lightGreen,
+                    isLink: false,
                   ),
                   const SizedBox(height: 30),
                   ElevatedButton(
@@ -103,11 +93,12 @@ class ContactDialog extends StatelessWidget {
     );
   }
 
-  Widget _buildContactItem({
+  Widget _buildWeChatItem({
     required BuildContext context,
     required IconData icon,
     required String text,
     required Color color,
+    required bool isLink,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -121,18 +112,29 @@ class ContactDialog extends StatelessWidget {
               fontSize: 18,
               fontWeight: FontWeight.w600,
               color: Colors.white,
+              decoration:
+                  isLink ? TextDecoration.underline : TextDecoration.none,
             ),
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.copy, color: Colors.white70),
-          onPressed: () {
-            Clipboard.setData(ClipboardData(text: text));
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content:
-                      Text(isPolish ? "Skopiowano: $text" : "Copied: $text")),
-            );
+          icon: Icon(
+            isLink ? Icons.open_in_new : Icons.copy,
+            color: Colors.white70,
+          ),
+          onPressed: () async {
+            if (isLink) {
+              if (await canLaunchUrl(Uri.parse(text))) {
+                await launchUrl(Uri.parse(text));
+              }
+            } else {
+              Clipboard.setData(ClipboardData(text: text));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content:
+                        Text(isPolish ? "Skopiowano: $text" : "Copied: $text")),
+              );
+            }
           },
         ),
       ],

@@ -12,56 +12,11 @@ class HowWeWorkPage extends StatefulWidget {
   State<HowWeWorkPage> createState() => _HowWeWorkPageState();
 }
 
-class _HowWeWorkPageState extends State<HowWeWorkPage>
-    with TickerProviderStateMixin {
+class _HowWeWorkPageState extends State<HowWeWorkPage> {
   final ScrollController _scrollController = ScrollController();
-  late AnimationController _pageController;
-  late Animation<double> _pageAnimation;
-  late List<AnimationController> _sectionControllers;
-  late List<Animation<double>> _sectionAnimations;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _pageController = AnimationController(
-      duration: const Duration(seconds: 3),
-      vsync: this,
-    );
-
-    _pageAnimation = CurvedAnimation(
-      parent: _pageController,
-      curve: Curves.easeOutExpo,
-    );
-
-    _sectionControllers = List.generate(
-        7,
-        (index) => AnimationController(
-              duration: Duration(milliseconds: 2500),
-              vsync: this,
-            ));
-
-    _sectionAnimations = _sectionControllers
-        .map((controller) => CurvedAnimation(
-              parent: controller,
-              curve: Curves.easeOutExpo,
-            ))
-        .toList();
-
-    _pageController.forward().then((_) async {
-      for (var controller in _sectionControllers) {
-        await Future.delayed(const Duration(milliseconds: 1000));
-        controller.forward();
-      }
-    });
-  }
 
   @override
   void dispose() {
-    _pageController.dispose();
-    for (var controller in _sectionControllers) {
-      controller.dispose();
-    }
     _scrollController.dispose();
     super.dispose();
   }
@@ -81,29 +36,55 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
           child: Stack(
             children: [
               Positioned.fill(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/Background3.png'),
-                      fit: BoxFit.cover,
+                child: Stack(
+                  children: [
+                    Container(color: Colors.black), // Czarne tło bazowe
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.topLeft,
+                          radius: 2,
+                          colors: [
+                            Color.fromARGB(100, 255, 0, 0), // Czerwony rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
+                      ),
                     ),
-                  ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        gradient: RadialGradient(
+                          center: Alignment.bottomRight,
+                          radius: 4,
+                          colors: [
+                            Color.fromARGB(
+                                100, 0, 0, 255), // Niebieski rozbłysk
+                            Colors.transparent,
+                          ],
+                          stops: [0.0, 1.0],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/Background3.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              ScaleTransition(
-                scale: _pageAnimation,
-                child: FadeTransition(
-                  opacity: _pageAnimation,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 60),
-                      _buildHeader(),
-                      _buildSections(),
-                      const SizedBox(height: 40),
-                      const FooterWidget(),
-                    ],
-                  ),
-                ),
+              Column(
+                children: [
+                  const SizedBox(height: 60),
+                  _buildHeader(),
+                  _buildSections(),
+                  const SizedBox(height: 40),
+                  const FooterWidget(),
+                ],
               ),
             ],
           ),
@@ -157,22 +138,16 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
         constraints: const BoxConstraints(maxWidth: 1200),
         child: Column(
           children: List.generate(7, (index) {
-            return FadeTransition(
-              opacity: _sectionAnimations[index],
-              child: ScaleTransition(
-                scale: _sectionAnimations[index],
-                child: Column(
-                  children: [
-                    _buildResponsiveSection(
-                      number: index + 1,
-                      title: _getTitle(index + 1),
-                      description: _getDescription(index + 1),
-                      imagePath: _getImagePath(index + 1),
-                    ),
-                    if (index < 6) _buildArrowBetweenSections(),
-                  ],
+            return Column(
+              children: [
+                _buildResponsiveSection(
+                  number: index + 1,
+                  title: _getTitle(index + 1),
+                  description: _getDescription(index + 1),
+                  imagePath: _getImagePath(index + 1),
                 ),
-              ),
+                if (index < 6) _buildArrowBetweenSections(),
+              ],
             );
           }),
         ),
@@ -213,49 +188,65 @@ class _HowWeWorkPageState extends State<HowWeWorkPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.michroma(
-              fontSize: 36,
-              fontWeight: FontWeight.bold,
-              color: const Color.fromARGB(255, 194, 181, 0),
+          Padding(
+            padding: MediaQuery.of(context).size.width < 600
+                ? const EdgeInsets.symmetric(horizontal: 24.0)
+                : EdgeInsets.zero,
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.michroma(
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 194, 181, 0),
+              ),
             ),
           ),
           const SizedBox(height: 25),
-          Container(
-            width: 600,
-            height: 300,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color.fromARGB(134, 194, 181, 0),
-                width: 3,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color.fromARGB(255, 97, 90, 0).withOpacity(0.5),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
+          Padding(
+            padding: MediaQuery.of(context).size.width < 600
+                ? const EdgeInsets.symmetric(horizontal: 24.0)
+                : EdgeInsets.zero,
+            child: Container(
+              width: 600,
+              height: 300,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color.fromARGB(134, 194, 181, 0),
+                  width: 3,
                 ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color:
+                        const Color.fromARGB(255, 97, 90, 0).withOpacity(0.5),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 25),
-          Text(
-            description,
-            style: GoogleFonts.michroma(
-              fontSize: 18,
-              color: Colors.white,
+          Padding(
+            padding: MediaQuery.of(context).size.width < 600
+                ? const EdgeInsets.symmetric(horizontal: 24.0)
+                : EdgeInsets.zero,
+            child: Text(
+              description,
+              style: GoogleFonts.michroma(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
           ),
         ],
       ),

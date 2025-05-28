@@ -9,7 +9,6 @@ import 'package:jbexpoweb/MainSection/VideoSection.dart';
 import 'package:jbexpoweb/MainSection/PortfolioSec.dart';
 import 'package:jbexpoweb/MainSection/PassionSection.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class JBExpoPage extends StatefulWidget {
   final bool isPolish;
@@ -68,14 +67,52 @@ class _JBExpoPageState extends State<JBExpoPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/Background3.png'),
-              fit: BoxFit.cover,
+        // Czarne tło jako podkład
+        Stack(
+          children: [
+            Container(color: Colors.black), // Główne czarne tło
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.topLeft,
+                  radius: 1.2,
+                  colors: [
+                    Color.fromARGB(100, 255, 0, 0), // Półprzezroczysty czerwony
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 1.0],
+                ),
+              ),
+            ),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.bottomRight,
+                  radius: 1.2,
+                  colors: [
+                    Color.fromARGB(
+                        100, 0, 0, 255), // Półprzezroczysty niebieski
+                    Colors.transparent,
+                  ],
+                  stops: [0.0, 1.0],
+                ),
+              ),
+            ),
+          ],
+        ),
+        // Obraz tła
+        // Obraz tła z lokalnych assets, z czarnym podkładem
+        Positioned.fill(
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/Background3.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ),
+
         GestureDetector(
           onVerticalDragUpdate: (details) {
             _handleScroll(details.primaryDelta ?? 0, isMouse: false);
@@ -126,7 +163,7 @@ class _JBExpoPageState extends State<JBExpoPage> {
           top: MediaQuery.of(context).size.height / 2 - 40,
           child: SmoothPageIndicator(
             controller: _pageController,
-            count: 5, // Zwiększamy liczbę sekcji o stopkę
+            count: 8, // Zwiększamy liczbę sekcji o stopkę
             axisDirection: Axis.vertical,
             effect: WormEffect(
               activeDotColor: Colors.redAccent,

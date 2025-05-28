@@ -136,7 +136,6 @@ class FooterWidget extends StatelessWidget {
   /// Tworzenie ikon mediów społecznościowych
   List<Widget> _buildSocialMediaIcons() {
     return [
-      // Pierwszy rząd: Instagram i Facebook
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -154,7 +153,7 @@ class FooterWidget extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(width: 20), // Odstęp między Instagramem a Facebookiem
+          const SizedBox(width: 20),
           Row(
             children: [
               Text(
@@ -171,8 +170,7 @@ class FooterWidget extends StatelessWidget {
           ),
         ],
       ),
-      const SizedBox(height: 10), // Odstęp między rzędami
-      // Drugi rząd: Twitter i Google
+      const SizedBox(height: 10),
       Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -190,8 +188,7 @@ class FooterWidget extends StatelessWidget {
               ),
             ],
           ),
-
-          const SizedBox(width: 34), // Odstęp między Twitterem a Google
+          const SizedBox(width: 34),
           Row(
             children: [
               Text(
@@ -203,6 +200,26 @@ class FooterWidget extends StatelessWidget {
                 icon: FontAwesomeIcons.google,
                 color: const Color.fromARGB(255, 251, 255, 0),
                 url: 'https://g.co/kgs/9fbbLNN',
+              ),
+            ],
+          ),
+        ],
+      ),
+      const SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Row(
+            children: [
+              Text(
+                'WeChat',
+                style: TextStyle(color: Colors.grey[400], fontSize: 12),
+              ),
+              const SizedBox(width: 8),
+              _buildSocialIcon(
+                icon: FontAwesomeIcons.weixin, // FontAwesome icon for WeChat
+                color: Colors.green,
+                url: 'https://www.wechat.com/en/',
               ),
             ],
           ),

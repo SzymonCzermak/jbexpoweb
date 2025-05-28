@@ -1,94 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:jbexpoweb/FooterWidget.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class EndSection extends StatefulWidget {
+class EndSection extends StatelessWidget {
   final bool isPolish;
 
   const EndSection({Key? key, required this.isPolish}) : super(key: key);
-
-  @override
-  _EndSectionState createState() => _EndSectionState();
-}
-
-class _EndSectionState extends State<EndSection> with TickerProviderStateMixin {
-  late AnimationController _textController;
-  late AnimationController _footerController;
-  late AnimationController _buttonsController;
-
-  late Animation<Offset> _textOffsetAnimation;
-  late Animation<Offset> _footerOffsetAnimation;
-  late Animation<Offset> _buttonsOffsetAnimation;
-
-  late Animation<double> _textOpacityAnimation;
-  late Animation<double> _footerOpacityAnimation;
-  late Animation<double> _buttonsOpacityAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _textController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _footerController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-    _buttonsController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _textOffsetAnimation =
-        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
-    _footerOffsetAnimation =
-        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(parent: _footerController, curve: Curves.easeOut),
-    );
-    _buttonsOffsetAnimation =
-        Tween<Offset>(begin: Offset(0, 0.5), end: Offset.zero).animate(
-      CurvedAnimation(parent: _buttonsController, curve: Curves.easeOut),
-    );
-
-    _textOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
-    _footerOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _footerController, curve: Curves.easeOut),
-    );
-    _buttonsOpacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _buttonsController, curve: Curves.easeOut),
-    );
-
-    _startAnimations();
-  }
-
-  void _startAnimations() async {
-    await _textController.forward();
-    await _footerController.forward();
-    await _buttonsController.forward();
-  }
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    _footerController.dispose();
-    _buttonsController.dispose();
-    super.dispose();
-  }
 
   void _copyToClipboard(BuildContext context, String text) {
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          widget.isPolish
+          isPolish
               ? "Skopiowano do schowka: $text"
               : "Copied to clipboard: $text",
         ),
@@ -96,48 +22,37 @@ class _EndSectionState extends State<EndSection> with TickerProviderStateMixin {
     );
   }
 
-  Future<void> _launchPhone(BuildContext context) async {
-    const String phoneNumber = "+48 515 000 868";
-    final Uri phoneUri = Uri.parse("tel:$phoneNumber");
-
-    if (await canLaunchUrl(phoneUri)) {
-      await launchUrl(phoneUri);
-    } else {
-      _copyToClipboard(context, phoneNumber);
-    }
-  }
-
-  Future<void> _launchGoogleMaps(BuildContext context) async {
-    const String mapsUrl =
-        "https://www.google.com/maps/search/?api=1&query=Dworcowa+1,+62-420+Strzałkowo,+Polska";
-
-    if (await canLaunchUrl(Uri.parse(mapsUrl))) {
-      await launchUrl(Uri.parse(mapsUrl));
+  Future<void> _launchUrl(String url, BuildContext context) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            widget.isPolish
-                ? "Nie można otworzyć Google Maps."
-                : "Unable to open Google Maps.",
-          ),
-        ),
+            content: Text(
+                isPolish ? "Nie można otworzyć linku." : "Cannot open link.")),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final bool isMobile = screenWidth < 600;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isMobile = screenWidth < 600;
+    final scaleFactor = screenHeight < 700 ? screenHeight / 700 : 1.0;
 
-    final double buttonWidth =
-        isMobile ? screenWidth * 0.25 : screenWidth * 0.15;
-    final double buttonHeight = isMobile ? 50.0 : 60.0;
-    final double iconSize = isMobile ? 20.0 : 24.0;
-    final double fontSize = isMobile ? 10.0 : 14.0;
+    final buttonWidth = isMobile
+        ? screenWidth * 0.6
+        : screenWidth * 0.2 * scaleFactor.clamp(0.7, 1.0);
+    final buttonHeight = 50.0 * scaleFactor.clamp(0.6, 1.0);
+    final iconSize = isMobile ? 20.0 * scaleFactor : 24.0 * scaleFactor;
+    final fontSize = isMobile ? 10.0 * scaleFactor : 14.0 * scaleFactor;
+    final textSize = isMobile ? 16.0 * scaleFactor : 20.0 * scaleFactor;
 
     return Container(
+      width: double.infinity,
+      height: screenHeight,
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/Background3.png'),
@@ -146,101 +61,84 @@ class _EndSectionState extends State<EndSection> with TickerProviderStateMixin {
       ),
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 16.0 : screenWidth * 0.1,
-        vertical: 40.0,
+        vertical: 32.0 * scaleFactor,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SlideTransition(
-            position: _textOffsetAnimation,
-            child: FadeTransition(
-              opacity: _textOpacityAnimation,
-              child: Text(
-                widget.isPolish
-                    ? "Zapraszamy do kontaktu, aby dowiedzieć się więcej o naszych usługach i projektach."
-                    : "Feel free to contact us to learn more about our services and projects.",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.michroma(
-                  fontSize: isMobile ? 16 : 22,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.grey[400],
-                  height: 1.6,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              isPolish ? "Skontaktuj się z nami!" : "Get in touch with us!",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.michroma(
+                fontSize: textSize,
+                fontWeight: FontWeight.w400,
+                color: Colors.grey[300],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 12 * scaleFactor,
+              runSpacing: 12 * scaleFactor,
+              children: [
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.phone,
+                  label: isPolish ? "Zadzwoń" : "Call",
+                  onTap: () => _launchUrl("tel:+48515000868", context),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  fontSize: fontSize,
+                  iconSize: iconSize,
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 40),
-          SlideTransition(
-            position: _footerOffsetAnimation,
-            child: FadeTransition(
-              opacity: _footerOpacityAnimation,
-              child: Container(
-                width: isMobile ? screenWidth * 0.9 : screenWidth * 0.7,
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 34, 34, 34).withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(16.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      offset: const Offset(0, 4),
-                      blurRadius: 10,
-                    ),
-                  ],
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 194, 181, 0),
-                    width: 2.0,
-                  ),
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.email,
+                  label: isPolish ? "Kopiuj Email" : "Copy Email",
+                  onTap: () => _copyToClipboard(context, "jbexpo@jbexpo.pl"),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  fontSize: fontSize,
+                  iconSize: iconSize,
                 ),
-                child: const FooterWidget(),
+                _buildActionButton(
+                  context: context,
+                  icon: Icons.map,
+                  label: "Google Maps",
+                  onTap: () => _launchUrl(
+                    "https://www.google.com/maps/search/?api=1&query=Dworcowa+1,+62-420+Strzałkowo,+Polska",
+                    context,
+                  ),
+                  width: buttonWidth,
+                  height: buttonHeight,
+                  fontSize: fontSize,
+                  iconSize: iconSize,
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _buildSocialIcons(context),
+            const SizedBox(height: 16),
+            Text(
+              "Design oraz pełna realizacja strony:\nSzymon Czermak",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.michroma(
+                fontSize: 12 * scaleFactor,
+                color: Colors.grey[500],
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          SlideTransition(
-            position: _buttonsOffsetAnimation,
-            child: FadeTransition(
-              opacity: _buttonsOpacityAnimation,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _buildActionButton(
-                    context: context,
-                    icon: Icons.phone,
-                    label: widget.isPolish ? "Zadzwoń" : "Call",
-                    onTap: () => _launchPhone(context),
-                    width: buttonWidth,
-                    height: buttonHeight,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                  ),
-                  const SizedBox(width: 16),
-                  _buildActionButton(
-                    context: context,
-                    icon: Icons.email,
-                    label: widget.isPolish ? "Kopiuj Email" : "Copy Email",
-                    onTap: () => _copyToClipboard(context, "jbexpo@jbexpo.pl"),
-                    width: buttonWidth,
-                    height: buttonHeight,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                  ),
-                  const SizedBox(width: 16),
-                  _buildActionButton(
-                    context: context,
-                    icon: Icons.map,
-                    label: widget.isPolish ? "Google Maps" : "Google Maps",
-                    onTap: () => _launchGoogleMaps(context),
-                    width: buttonWidth,
-                    height: buttonHeight,
-                    fontSize: fontSize,
-                    iconSize: iconSize,
-                  ),
-                ],
+            const SizedBox(height: 4),
+            Text(
+              "© 2025 JB Expo. Wszelkie prawa zastrzeżone.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.michroma(
+                fontSize: 14 * scaleFactor,
+                color: Colors.grey[600],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -271,25 +169,72 @@ class _EndSectionState extends State<EndSection> with TickerProviderStateMixin {
             label,
             style: GoogleFonts.michroma(
               fontSize: fontSize,
-              fontWeight: FontWeight.w400,
               color: Colors.white,
             ),
           ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color.fromARGB(96, 94, 94, 94),
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: const BorderSide(
               color: Color.fromARGB(255, 194, 181, 0),
-              width: 1.0,
             ),
           ),
-          elevation: 10,
-          shadowColor: const Color.fromARGB(255, 121, 113, 0).withOpacity(0.4),
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialIcons(BuildContext context) {
+    const double iconSize = 28;
+    const double spacing = 16;
+
+    final List<Map<String, dynamic>> socials = [
+      {
+        'icon': FontAwesomeIcons.instagram,
+        'color': Colors.pink,
+        'url': 'https://www.instagram.com',
+      },
+      {
+        'icon': FontAwesomeIcons.facebook,
+        'color': Colors.blue,
+        'url': 'https://www.facebook.com/profile.php?id=100088078372925',
+      },
+      {
+        'icon': FontAwesomeIcons.whatsapp,
+        'color': Color(0xFF25D366),
+        'url': 'https://wa.me/515000868',
+      },
+      {
+        'icon': FontAwesomeIcons.google,
+        'color': Colors.amber,
+        'url': 'https://g.co/kgs/9fbbLNN',
+      },
+      {
+        'icon': FontAwesomeIcons.weixin,
+        'color': Colors.green,
+        'url': 'https://www.wechat.com/en/',
+      },
+    ];
+
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: spacing,
+      children: socials.map((social) {
+        return GestureDetector(
+          onTap: () => _launchUrl(social['url'], context),
+          child: CircleAvatar(
+            backgroundColor: social['color'].withOpacity(0.2),
+            radius: iconSize / 1.6,
+            child: Icon(
+              social['icon'],
+              color: social['color'],
+              size: iconSize,
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 }

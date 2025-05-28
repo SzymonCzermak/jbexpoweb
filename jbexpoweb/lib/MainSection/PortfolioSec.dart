@@ -87,30 +87,36 @@ class _PortfolioSecState extends State<PortfolioSec>
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-    final double containerSize = screenWidth < 600
-        ? screenWidth * 0.70 // na telefonie obrazek prawie pełny ekran
-        : screenWidth * 0.39;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
-    final bool isMobile = screenWidth < 800;
+    final isMobile = screenWidth < 800;
+
+    // Skaluje cały widok pionowo, jeśli ekran jest niski
+    final scaleFactor = screenHeight < 800 ? screenHeight / 800 : 1.0;
 
     return FadeTransition(
       opacity: _fadeAnimation,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.1),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (isMobile)
-                _buildMobileLayout(containerSize)
-              else
-                _buildDesktopLayout(containerSize),
-              const SizedBox(height: 20),
-            ],
+        child: Center(
+          child: Transform.scale(
+            scale: scaleFactor,
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  isMobile
+                      ? _buildMobileLayout(screenWidth * 0.65)
+                      : _buildDesktopLayout(screenWidth * 0.35),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
           ),
         ),
       ),

@@ -140,75 +140,83 @@ class _S2SectionState extends State<S2Section> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isSmallScreen = screenWidth < 600;
     final bool isLargeScreen = screenWidth > 1200;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 16.0 : screenWidth * 0.1),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SlideTransition(
-              position: _textOffsetAnimation,
-              child: FadeTransition(
-                opacity: _textOpacityAnimation,
-                child: Text(
-                  widget.isPolish ? 'Nasze Usługi' : 'Our Services',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.michroma(
-                    fontSize: isSmallScreen ? 24.0 : 80.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+    final double scaleFactor = screenHeight < 800 ? screenHeight / 800 : 1.0;
+
+    return Transform.scale(
+      scale: scaleFactor,
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 16.0 : screenWidth * 0.1,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SlideTransition(
+                position: _textOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _textOpacityAnimation,
+                  child: Text(
+                    widget.isPolish ? 'Nasze Usługi' : 'Our Services',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.michroma(
+                      fontSize: isSmallScreen ? 24.0 : 80.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            AnimatedBuilder(
-              animation: _dividerWidthAnimation,
-              builder: (context, child) {
-                return Container(
-                  width: _dividerWidthAnimation.value * screenWidth * 0.8,
-                  height: 2,
-                  color: Colors.white,
-                );
-              },
-            ),
-            const SizedBox(height: 40),
-            SlideTransition(
-              position: _firstItemOffsetAnimation,
-              child: FadeTransition(
-                opacity: _firstItemOpacityAnimation,
-                child: _buildProjectItem(
-                  context,
-                  widget.isPolish
-                      ? 'Profesjonalni montażyści'
-                      : 'Professional Fitters',
-                  _buildFittersDescription(),
-                  'assets/jbexpo/Pracownicy.png',
-                  isImageLeft: true,
-                  isLargeScreen: isLargeScreen,
+              const SizedBox(height: 12),
+              AnimatedBuilder(
+                animation: _dividerWidthAnimation,
+                builder: (context, child) {
+                  return Container(
+                    width: _dividerWidthAnimation.value * screenWidth * 0.8,
+                    height: 2,
+                    color: Colors.white,
+                  );
+                },
+              ),
+              const SizedBox(height: 40),
+              SlideTransition(
+                position: _firstItemOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _firstItemOpacityAnimation,
+                  child: _buildProjectItem(
+                    context,
+                    widget.isPolish
+                        ? 'Profesjonalni montażyści'
+                        : 'Professional Fitters',
+                    _buildFittersDescription(),
+                    'assets/jbexpo/Pracownicy.png',
+                    isImageLeft: true,
+                    isLargeScreen: isLargeScreen,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SlideTransition(
-              position: _secondItemOffsetAnimation,
-              child: FadeTransition(
-                opacity: _secondItemOpacityAnimation,
-                child: _buildProjectItem(
-                  context,
-                  widget.isPolish ? 'Logistyka' : 'Logistics',
-                  _buildLogisticsDescription(),
-                  'assets/jbexpo/Logistyka.png',
-                  isImageLeft: false,
-                  isLargeScreen: isLargeScreen,
+              const SizedBox(height: 20),
+              SlideTransition(
+                position: _secondItemOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _secondItemOpacityAnimation,
+                  child: _buildProjectItem(
+                    context,
+                    widget.isPolish ? 'Logistyka' : 'Logistics',
+                    _buildLogisticsDescription(),
+                    'assets/jbexpo/Logistyka.png',
+                    isImageLeft: false,
+                    isLargeScreen: isLargeScreen,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

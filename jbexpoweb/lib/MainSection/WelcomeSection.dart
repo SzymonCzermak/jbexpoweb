@@ -73,106 +73,111 @@ class _WelcomeSectionState extends State<WelcomeSection>
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isSmallScreen = screenWidth < 600;
+    final double scaleFactor = screenHeight < 800 ? screenHeight / 800 : 1.0;
 
-    // Dynamiczne marginesy
     final double horizontalPadding = isSmallScreen ? 16.0 : screenWidth * 0.1;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SlideTransition(
-              position: _slideAnimationHeader,
-              child: FadeTransition(
-                opacity: _opacityAnimationHeader,
-                child: Text(
-                  widget.isPolish ? 'Miło Cię widzieć!' : 'Great to see you!',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.michroma(
-                    fontSize: isSmallScreen ? 36.0 : 80.0,
-                    fontWeight: FontWeight.bold,
-                    color: widget.color,
+    return Transform.scale(
+      scale: scaleFactor,
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SlideTransition(
+                position: _slideAnimationHeader,
+                child: FadeTransition(
+                  opacity: _opacityAnimationHeader,
+                  child: Text(
+                    widget.isPolish ? 'Miło Cię widzieć!' : 'Great to see you!',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.michroma(
+                      fontSize: isSmallScreen ? 36.0 : 80.0,
+                      fontWeight: FontWeight.bold,
+                      color: widget.color,
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            FadeTransition(
-              opacity: _opacityAnimationText,
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'Jesteśmy ekspertami w budowie stoisk targowych. Nasza firma specjalizuje się w produkcji, montażu i demontażu stoisk, które wyróżniają się '
-                          : 'We are experts in building trade booths. Our company specializes in the production, assembly, and disassembly of booths that stand out for their ',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: widget.color,
+              const SizedBox(height: 12),
+              AnimatedBuilder(
+                animation: _widthAnimation,
+                builder: (context, child) {
+                  return Container(
+                    width: _widthAnimation.value * screenWidth * 0.8,
+                    height: 2,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              FadeTransition(
+                opacity: _opacityAnimationText,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: widget.isPolish
+                            ? 'Jesteśmy ekspertami w budowie stoisk targowych. Nasza firma specjalizuje się w produkcji, montażu i demontażu stoisk, które wyróżniają się '
+                            : 'We are experts in building trade booths. Our company specializes in the production, assembly, and disassembly of booths that stand out for their ',
+                        style: GoogleFonts.michroma(
+                          fontSize: isSmallScreen ? 14.0 : 18.0,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: widget.color,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish ? 'estetyką' : 'aesthetics',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(255, 194, 181, 0),
+                      TextSpan(
+                        text: widget.isPolish ? 'estetyką' : 'aesthetics',
+                        style: GoogleFonts.michroma(
+                          fontSize: isSmallScreen ? 14.0 : 18.0,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: const Color.fromARGB(255, 194, 181, 0),
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish ? ' i ' : ' and ',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: widget.color,
+                      TextSpan(
+                        text: widget.isPolish ? ' i ' : ' and ',
+                        style: GoogleFonts.michroma(
+                          fontSize: isSmallScreen ? 14.0 : 18.0,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: widget.color,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'innowacyjnymi rozwiązaniami'
-                          : 'innovative solutions',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(255, 194, 181, 0),
+                      TextSpan(
+                        text: widget.isPolish
+                            ? 'innowacyjnymi rozwiązaniami'
+                            : 'innovative solutions',
+                        style: GoogleFonts.michroma(
+                          fontSize: isSmallScreen ? 14.0 : 18.0,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: const Color.fromARGB(255, 194, 181, 0),
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? '. Pomagamy naszym klientom skutecznie zaprezentować swoją markę i przyciągnąć uwagę odwiedzających. Dzięki doświadczeniu i dbałości o detale, nasze realizacje stają się kluczem do sukcesu!'
-                          : '. We help our clients effectively present their brand and attract visitors. Thanks to our experience and attention to detail, our projects become the key to success!',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 14.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: widget.color,
+                      TextSpan(
+                        text: widget.isPolish
+                            ? '. Pomagamy naszym klientom skutecznie zaprezentować swoją markę i przyciągnąć uwagę odwiedzających. Dzięki doświadczeniu i dbałości o detale, nasze realizacje stają się kluczem do sukcesu!'
+                            : '. We help our clients effectively present their brand and attract visitors. Thanks to our experience and attention to detail, our projects become the key to success!',
+                        style: GoogleFonts.michroma(
+                          fontSize: isSmallScreen ? 14.0 : 18.0,
+                          fontWeight: FontWeight.w400,
+                          height: 1.5,
+                          color: widget.color,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            AnimatedBuilder(
-              animation: _widthAnimation,
-              builder: (context, child) {
-                return Container(
-                  width: _widthAnimation.value * screenWidth * 0.8,
-                  height: 2,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

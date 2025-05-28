@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jbexpoweb/loading_widget.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoSection extends StatefulWidget {
@@ -25,6 +26,7 @@ class VideoSection extends StatefulWidget {
 
 class _VideoSectionState extends State<VideoSection> {
   late VideoPlayerController _controller;
+  bool _error = false;
 
   @override
   void initState() {
@@ -33,19 +35,26 @@ class _VideoSectionState extends State<VideoSection> {
   }
 
   void _initializeVideo() {
+    setState(() {
+      _error = false;
+    });
+
     _controller = VideoPlayerController.network(
-      'assets/JBExpoPlus_Loga.mp4', // <- ważne: przez sieć, nie jako asset!
+      'https://raw.githubusercontent.com/SzymonCzermak/jbexpoweb/main/jbexpoweb/assets/JBExpoPlus_Loga.mp4',
     )
       ..setVolume(0)
+      ..setLooping(true)
       ..initialize().then((_) {
         if (mounted) {
           setState(() {
             _controller.play();
-            _controller.setLooping(true);
           });
         }
       }).catchError((e) {
         debugPrint("Video Initialization Error: $e");
+        setState(() {
+          _error = true;
+        });
       });
   }
 
@@ -64,8 +73,8 @@ class _VideoSectionState extends State<VideoSection> {
 
         return Center(
           child: Container(
-            width: screenWidth, // Pełna szerokość ekranu
-            height: screenHeight, // Pełna wysokość ekranu
+            width: screenWidth,
+            height: screenHeight,
             decoration: BoxDecoration(
               color: Colors.black,
               borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -84,20 +93,50 @@ class _VideoSectionState extends State<VideoSection> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(widget.borderRadius),
-              child: _controller.value.isInitialized
-                  ? FittedBox(
-                      fit: BoxFit.contain, // Rozciągnięcie filmu na cały ekran
-                      child: SizedBox(
-                        width: _controller.value.size.width,
-                        height: _controller.value.size.height,
-                        child: VideoPlayer(_controller),
-                      ),
-                    )
-                  : const Center(child: CircularProgressIndicator()),
+              child: _error
+                  ? _buildErrorContent()
+                  : _controller.value.isInitialized
+                      ? FittedBox(
+                          fit: BoxFit.contain,
+                          child: SizedBox(
+                            width: _controller.value.size.width,
+                            height: _controller.value.size.height,
+                            child: VideoPlayer(_controller),
+                          ),
+                        )
+                      : _buildLoading(),
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildLoading() {
+    return const AnimatedLoadingWidget();
+  }
+
+  Widget _buildErrorContent() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error, color: Colors.redAccent, size: 48),
+          const SizedBox(height: 16),
+          const Text(
+            'Nie udało się załadować filmu.',
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: () {
+              _controller.dispose();
+              _initializeVideo();
+            },
+            child: const Text('Spróbuj ponownie'),
+          ),
+        ],
+      ),
     );
   }
 }

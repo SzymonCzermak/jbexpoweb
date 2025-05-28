@@ -141,11 +141,12 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
       ),
     );
 
-    _controller.forward();
     _textController.forward().then((_) {
-      _dividerController.forward().then((_) {
-        _productionController.forward().then((_) {
-          _equipmentController.forward();
+      _serviceController.forward().then((_) {
+        _dividerController.forward().then((_) {
+          _productionController.forward().then((_) {
+            _equipmentController.forward();
+          });
         });
       });
     });
@@ -165,116 +166,83 @@ class _S1SectionState extends State<S1Section> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isSmallScreen = screenWidth < 600;
     final bool isLargeScreen = screenWidth > 1200;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: isSmallScreen ? 16.0 : screenWidth * 0.1),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SlideTransition(
-              position: _textOffsetAnimation,
-              child: FadeTransition(
-                opacity: _textOpacityAnimation,
-                child: Text(
-                  widget.isPolish ? 'Nasze Usługi' : 'Our Services',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.michroma(
-                    fontSize: isSmallScreen ? 24.0 : 80.0,
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            SlideTransition(
-              position: _serviceOffsetAnimation,
-              child: FadeTransition(
-                opacity: _serviceOpacityAnimation,
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
+    final double scaleFactor = screenHeight < 800 ? screenHeight / 800 : 1.0;
+
+    return Transform.scale(
+      scale: scaleFactor,
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: isSmallScreen ? 16.0 : screenWidth * 0.1,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SlideTransition(
+                position: _textOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _textOpacityAnimation,
+                  child: Text(
+                    widget.isPolish ? 'Nasze Usługi' : 'Our Services',
+                    textAlign: TextAlign.center,
                     style: GoogleFonts.michroma(
-                      fontSize: isSmallScreen ? 12.0 : 16.0,
-                      fontWeight: FontWeight.w400,
-                      color: const Color.fromARGB(255, 255, 255, 255),
+                      fontSize: isSmallScreen ? 24.0 : 80.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
-                    children: [
-                      TextSpan(
-                        text: widget.isPolish ? 'Oferujemy ' : 'We offer a ',
-                      ),
-                      TextSpan(
-                        text: widget.isPolish
-                            ? 'szeroki zakres usług'
-                            : 'wide range of services',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 194, 181, 0),
-                        ),
-                      ),
-                      TextSpan(
-                        text: widget.isPolish
-                            ? ', aby spełnić wszystkie '
-                            : ' to meet all your ',
-                      ),
-                      TextSpan(
-                        text: widget.isPolish ? 'Twoje potrzeby.' : 'needs.',
-                        style: const TextStyle(
-                          color: Color.fromARGB(255, 194, 181, 0),
-                        ),
-                      ),
-                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            AnimatedBuilder(
-              animation: _dividerWidthAnimation,
-              builder: (context, child) {
-                return Container(
-                  width: _dividerWidthAnimation.value * screenWidth * 0.8,
-                  height: 2,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                );
-              },
-            ),
-            const SizedBox(height: 40),
-            SlideTransition(
-              position: _productionOffsetAnimation,
-              child: FadeTransition(
-                opacity: _productionOpacityAnimation,
-                child: _buildServiceItem(
-                  context,
-                  widget.isPolish ? 'Produkcja' : 'Production',
-                  _buildProductionDescription(),
-                  'assets/jbexpo/Produkcja.png',
-                  isImageLeft: true,
-                  isLargeScreen: isLargeScreen,
+              const SizedBox(height: 12),
+              AnimatedBuilder(
+                animation: _dividerWidthAnimation,
+                builder: (context, child) {
+                  return Container(
+                    width: _dividerWidthAnimation.value * screenWidth * 0.8,
+                    height: 2,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  );
+                },
+              ),
+              const SizedBox(height: 40),
+              SlideTransition(
+                position: _productionOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _productionOpacityAnimation,
+                  child: _buildServiceItem(
+                    context,
+                    widget.isPolish ? 'Produkcja' : 'Production',
+                    _buildProductionDescription(),
+                    'assets/jbexpo/Produkcja.png',
+                    isImageLeft: true,
+                    isLargeScreen: isLargeScreen,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            SlideTransition(
-              position: _equipmentOffsetAnimation,
-              child: FadeTransition(
-                opacity: _equipmentOpacityAnimation,
-                child: _buildServiceItem(
-                  context,
-                  widget.isPolish
-                      ? 'Profesjonalny sprzęt'
-                      : 'Professional Equipment',
-                  _buildEquipmentDescription(),
-                  'assets/jbexpo/Sprzet.png',
-                  isImageLeft: false,
-                  isLargeScreen: isLargeScreen,
+              const SizedBox(height: 20),
+              SlideTransition(
+                position: _equipmentOffsetAnimation,
+                child: FadeTransition(
+                  opacity: _equipmentOpacityAnimation,
+                  child: _buildServiceItem(
+                    context,
+                    widget.isPolish
+                        ? 'Profesjonalny sprzęt'
+                        : 'Professional Equipment',
+                    _buildEquipmentDescription(),
+                    'assets/jbexpo/Sprzet.png',
+                    isImageLeft: false,
+                    isLargeScreen: isLargeScreen,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

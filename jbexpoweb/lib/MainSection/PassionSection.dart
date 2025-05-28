@@ -83,119 +83,128 @@ class _PassionSectionState extends State<PassionSection>
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
     final bool isSmallScreen = screenWidth < 600;
-    final int columns = isSmallScreen ? 2 : 3; // Kolumny zależne od ekranu
+    final double scaleFactor = screenHeight < 800 ? screenHeight / 800 : 1.0;
     final double iconSize = isSmallScreen ? 20.0 : 40.0;
+    final int columns = isSmallScreen ? 2 : 3;
 
-    // Dynamiczne marginesy
     final double horizontalPadding = isSmallScreen ? 16.0 : screenWidth * 0.1;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SlideTransition(
-              position: _slideAnimationHeader,
-              child: FadeTransition(
-                opacity: _opacityAnimationHeader,
-                child: Text(
-                  widget.isPolish
-                      ? 'Pasja do tworzenia przestrzenii'
-                      : 'A passion for creating spaces',
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.michroma(
-                    fontSize: isSmallScreen ? 32.0 : 80.0,
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromARGB(255, 216, 216, 216),
+    return Transform.scale(
+      scale: scaleFactor,
+      alignment: Alignment.topCenter,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SlideTransition(
+                position: _slideAnimationHeader,
+                child: FadeTransition(
+                  opacity: _opacityAnimationHeader,
+                  child: Text(
+                    widget.isPolish
+                        ? 'Pasja do tworzenia przestrzenii'
+                        : 'A passion for creating spaces',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.michroma(
+                      fontSize: isSmallScreen ? 30.0 : 80.0,
+                      fontWeight: FontWeight.bold,
+                      color: const Color.fromARGB(255, 216, 216, 216),
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            FadeTransition(
-              opacity: _opacityAnimationText,
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'Nasz kompleksowy pakiet usług '
-                          : 'Our comprehensive suite of professional services ',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 12.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(255, 216, 216, 216),
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'skierowany jest do szerokiej gamy klientów, '
-                          : 'caters to a diverse clientele, ',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 12.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(255, 161, 151, 0),
-                      ),
-                    ),
-                    TextSpan(
-                      text: widget.isPolish
-                          ? 'od właścicieli domów po deweloperów komercyjnych.'
-                          : 'ranging from homeowners to commercial developers.',
-                      style: GoogleFonts.michroma(
-                        fontSize: isSmallScreen ? 12.0 : 18.0,
-                        fontWeight: FontWeight.w400,
-                        height: 1.5,
-                        color: const Color.fromARGB(255, 216, 216, 216),
-                      ),
-                    ),
-                  ],
+              const SizedBox(height: 12),
+              FadeTransition(
+                opacity: _opacityAnimationText,
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: widget.isPolish
+                                ? 'Nasz kompleksowy pakiet usług '
+                                : 'Our comprehensive suite of services ',
+                            style: GoogleFonts.michroma(
+                              fontSize: isSmallScreen ? 12.0 : 18.0,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              color: const Color.fromARGB(255, 216, 216, 216),
+                            ),
+                          ),
+                          TextSpan(
+                            text: widget.isPolish
+                                ? 'skierowany jest do szerokiej gamy '
+                                : 'caters to a wide range of ',
+                            style: GoogleFonts.michroma(
+                              fontSize: isSmallScreen ? 12.0 : 18.0,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              color: const Color.fromARGB(255, 161, 151, 0),
+                            ),
+                          ),
+                          TextSpan(
+                            text: widget.isPolish
+                                ? 'klientów na całym świecie!'
+                                : 'clients around the globe!',
+                            style: GoogleFonts.michroma(
+                              fontSize: isSmallScreen ? 12.0 : 18.0,
+                              fontWeight: FontWeight.w400,
+                              height: 1.5,
+                              color: const Color.fromARGB(255, 216, 216, 216),
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            AnimatedBuilder(
-              animation: _widthAnimation,
-              builder: (context, child) {
-                return Container(
-                  width: _widthAnimation.value * screenWidth * 0.8,
-                  height: 2,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            LayoutBuilder(
-              builder: (context, constraints) {
-                double itemWidth =
-                    (constraints.maxWidth - (columns - 1) * 20) / columns;
+              const SizedBox(height: 20),
+              AnimatedBuilder(
+                animation: _widthAnimation,
+                builder: (context, child) {
+                  return Container(
+                    width: _widthAnimation.value * screenWidth * 0.8,
+                    height: 2,
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  double itemWidth =
+                      (constraints.maxWidth - (columns - 1) * 20) / columns;
 
-                return Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 20.0,
-                  runSpacing: 20.0,
-                  children: [
-                    for (int i = 0; i < 6; i++)
-                      FadeTransition(
-                        opacity: _cardOpacities[i],
-                        child: SizedBox(
-                          width: itemWidth,
-                          child: _AnimatedServiceCard(
-                            title: _getTitle(i),
-                            description: _getDescription(i),
-                            iconSize: iconSize,
+                  return Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 20.0,
+                    runSpacing: 20.0,
+                    children: [
+                      for (int i = 0; i < 6; i++)
+                        FadeTransition(
+                          opacity: _cardOpacities[i],
+                          child: SizedBox(
+                            width: itemWidth,
+                            child: _AnimatedServiceCard(
+                              title: _getTitle(i),
+                              description: _getDescription(i),
+                              iconSize: iconSize,
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ],
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
